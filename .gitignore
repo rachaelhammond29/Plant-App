@@ -1,0 +1,14 @@
+# API keys — never commit these
+api-key.txt
+.env
+
+# macOS
+.DS_Store
+__MACOSX/
+
+# Editor
+.vscode/
+.idea/
+
+# Claude Code internal
+CLAUDE.md

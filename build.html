@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build Your Space — Vinge Studios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,200;0,8..60,300;0,8..60,400;1,8..60,200;1,8..60,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream:       #f5ede0;
+      --beige:       #e8dece;
+      --beige-mid:   #d8ccb8;
+      --sage:        #8fa878;
+      --sage-light:  #b8c9b0;
+      --rose:        #a86868;
+      --rose-muted:  #c49898;
+      --maroon:      #7a2e30;
+      --gray-green:  #6b7d68;
+      --forest:      #2d4a30;
+      --forest-dark: #1e3320;
+      --charcoal:    #1c1c1c;
+      --font-display:'Cormorant Garamond', Georgia, serif;
+      --font-body:   'Source Serif 4', Georgia, serif;
+      --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); font-weight: 300; color: var(--charcoal); background: var(--cream); overflow-x: hidden; }
+    img  { display: block; max-width: 100%; }
+    a    { text-decoration: none; color: inherit; }
+
+    /* ─── Nav ────────────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0.5rem 2rem;
+      display: flex; align-items: center; gap: 1.2rem;
+      background: rgba(245,237,224,0.96); backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+      transition: padding 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .nav.scrolled { padding: 0.3rem 2rem; }
+    .nav-logo { height: 160px; width: auto; transition: height 0.45s cubic-bezier(0.16,1,0.3,1); }
+    .nav.scrolled .nav-logo { height: 80px; }
+
+    .hamburger {
+      flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      width: 44px; height: 44px; padding: 0; background: none; border: none; cursor: pointer; z-index: 102;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 1.5px; border-radius: 2px; background: var(--forest-dark);
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .sidebar-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,51,32,0.45); backdrop-filter: blur(3px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: min(360px, 88vw); z-index: 201; background: var(--cream);
+      transform: translateX(-100%);
+      transition: transform 0.42s cubic-bezier(0.16,1,0.3,1);
+      display: flex; flex-direction: column;
+      box-shadow: 12px 0 60px rgba(0,0,0,0.18);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-top {
+      padding: 1.6rem 1.8rem 1.4rem; border-bottom: 1px solid var(--beige-mid);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sidebar-logo { height: 64px; width: auto; }
+    .sidebar-close {
+      width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+      background: none; border: 1px solid var(--beige-mid); border-radius: 50%; cursor: pointer; color: var(--gray-green);
+      transition: border-color 0.2s, color 0.2s, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sidebar-close:hover { border-color: var(--maroon); color: var(--maroon); transform: rotate(90deg); }
+    .sidebar-eyebrow { padding: 1.8rem 1.8rem 0.6rem; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-green); }
+    .sidebar-nav { display: flex; flex-direction: column; flex: 1; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 1.2rem; padding: 1.25rem 1.8rem;
+      text-decoration: none; color: inherit; border-left: 2px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .sidebar-item:hover { background: var(--beige); border-left-color: var(--maroon); }
+    .sidebar-icon {
+      width: 46px; height: 46px; flex-shrink: 0; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--beige); border: 1px solid var(--beige-mid); color: var(--forest);
+      transition: background 0.2s, color 0.2s;
+    }
+    .sidebar-item:hover .sidebar-icon { background: var(--forest); color: var(--cream); }
+    .sidebar-item-name { font-family: var(--font-display); font-size: 1.4rem; font-weight: 300; color: var(--forest-dark); line-height: 1.1; margin-bottom: 0.2rem; }
+    .sidebar-item-desc { font-size: 0.76rem; font-weight: 200; color: var(--gray-green); }
+    .sidebar-footer { padding: 1.2rem 1.8rem 1.8rem; border-top: 1px solid var(--beige-mid); font-size: 0.68rem; color: rgba(107,125,104,0.5); letter-spacing: 0.05em; }
+
+    /* ─── Page header ────────────────────────────────────── */
+    .page-header {
+      padding: max(210px, 9rem) 0 4.5rem; text-align: center;
+      background: var(--forest-dark); position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 70% at 50% 60%, rgba(45,74,48,0.5) 0%, rgba(122,46,48,0.1) 60%, transparent 80%);
+    }
+    .page-header-inner { position: relative; z-index: 1; }
+    .page-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--sage-light); margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .page-eyebrow::before, .page-eyebrow::after { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--sage); }
+    .page-title {
+      font-family: var(--font-display); font-weight: 300;
+      font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1.1; color: var(--cream); margin-bottom: 1rem;
+    }
+    .page-title em { font-style: italic; color: var(--rose-muted); }
+    .page-sub { font-size: 0.95rem; font-weight: 200; line-height: 1.8; color: rgba(245,237,224,0.55); max-width: 50ch; margin: 0 auto; }
+
+    /* ─── Main ───────────────────────────────────────────── */
+    .main { padding: 5rem 0 7rem; }
+    .container { width: min(1100px, 100% - 3rem); margin-inline: auto; }
+
+    /* ─── Upload ─────────────────────────────────────────── */
+    #upload-panel { animation: fadeUp 0.6s var(--ease-out) both; }
+    .upload-zone {
+      border: 1.5px dashed var(--beige-mid); border-radius: 14px;
+      background: var(--beige); padding: 5rem 2rem; text-align: center; cursor: pointer;
+      transition: border-color 0.25s, background 0.25s, transform 0.3s var(--ease-out);
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--sage); background: #ece5d6; transform: translateY(-3px); }
+    .upload-zone.drag-over { border-style: solid; }
+    .upload-input { display: none; }
+    .upload-icon {
+      width: 72px; height: 72px; margin: 0 auto 1.8rem;
+      background: var(--cream); border: 1px solid var(--beige-mid); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; transition: background 0.25s, border-color 0.25s;
+    }
+    .upload-zone:hover .upload-icon { background: var(--forest); border-color: var(--forest); }
+    .upload-zone:hover .upload-icon svg { stroke: var(--cream); }
+    .upload-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; color: var(--forest-dark); margin-bottom: 0.5rem; }
+    .upload-sub { font-size: 0.88rem; font-weight: 200; color: var(--gray-green); margin-bottom: 1.6rem; }
+    .upload-browse { display: inline-block; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; background: var(--forest); color: var(--cream); padding: 0.75rem 2rem; border-radius: 100px; transition: background 0.25s; }
+    .upload-zone:hover .upload-browse { background: var(--maroon); }
+    .upload-formats { margin-top: 1.2rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(107,125,104,0.6); }
+
+    /* ─── Workspace ──────────────────────────────────────── */
+    #workspace { display: none; animation: fadeUp 0.5s var(--ease-out) both; }
+
+    /* Preview grid: photo left | style picker right */
+    .preview-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem;
+      align-items: start; margin-bottom: 3rem;
+    }
+    #workspace.analyzing .preview-grid,
+    #workspace.has-results .preview-grid { grid-template-columns: 1fr; gap: 0; }
+    #workspace.analyzing .preview-side,
+    #workspace.has-results .preview-side { display: none; }
+
+    /* Photo frame (used in preview + results) */
+    .photo-wrap {
+      position: relative; border-radius: 14px; overflow: hidden;
+      background: var(--forest-dark); line-height: 0;
+    }
+    .photo-wrap img { width: 100%; display: block; max-height: 560px; object-fit: contain; }
+
+    /* Hotspot pins */
+    .hotspot {
+      position: absolute;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--maroon); color: var(--cream);
+      font-family: var(--font-body); font-size: 0.72rem; font-weight: 400;
+      display: flex; align-items: center; justify-content: center;
+      transform: translate(-50%, -50%);
+      cursor: pointer; z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+      transition: transform 0.2s, background 0.2s;
+      border: 2px solid rgba(245,237,224,0.4);
+    }
+    .hotspot::after {
+      content: ''; position: absolute; inset: -5px; border-radius: 50%;
+      border: 2px solid var(--maroon); opacity: 0.35;
+      animation: hotPulse 2.2s ease-in-out infinite;
+    }
+    .hotspot:hover { transform: translate(-50%, -50%) scale(1.2); background: var(--forest); }
+    .hotspot.type-decor { background: var(--forest); }
+    .hotspot.type-decor::after { border-color: var(--forest); }
+    @keyframes hotPulse { 0%,100%{transform:scale(1);opacity:0.35} 50%{transform:scale(1.6);opacity:0} }
+
+    /* Preview side panel */
+    .preview-side { display: flex; flex-direction: column; gap: 1.4rem; padding-top: 0.5rem; }
+    .preview-eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--forest); display: flex; align-items: center; gap: 0.6rem;
+    }
+    .preview-eyebrow::before { content: ''; width: 18px; height: 1px; background: var(--forest); }
+    .preview-heading {
+      font-family: var(--font-display); font-weight: 300;
+      font-size: clamp(1.8rem, 2.5vw, 2.4rem); line-height: 1.15; color: var(--forest-dark);
+    }
+    .preview-heading em { font-style: italic; color: var(--maroon); }
+    .preview-desc { font-size: 0.88rem; font-weight: 200; line-height: 1.9; color: #5a5a50; }
+
+    /* Style picker */
+    .style-picker-label {
+      font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gray-green); margin-bottom: 0.6rem;
+    }
+    .style-pills {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .style-pill {
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 300;
+      letter-spacing: 0.06em;
+      padding: 0.45rem 1rem; border-radius: 100px; cursor: pointer;
+      border: 1px solid var(--beige-mid); background: var(--cream); color: var(--gray-green);
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .style-pill:hover { border-color: var(--sage); color: var(--forest); }
+    .style-pill.active { background: var(--forest); border-color: var(--forest); color: var(--cream); }
+    .level-hint { font-size: 0.72rem; font-weight: 200; color: var(--rose); letter-spacing: 0.03em; margin-top: 0.45rem; font-style: italic; }
+
+    .btn-design {
+      align-self: flex-start;
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      font-family: var(--font-body); font-weight: 300;
+      font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--forest); color: var(--cream);
+      padding: 1rem 2.2rem; border-radius: 100px; border: none; cursor: pointer;
+      transition: background 0.25s, transform 0.3s var(--ease-out), box-shadow 0.3s;
+    }
+    .btn-design:hover { background: var(--maroon); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(30,51,32,0.2); }
+    .btn-design:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-change {
+      font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gray-green); background: none; border: none; padding: 0; cursor: pointer;
+      transition: color 0.25s; align-self: flex-start;
+    }
+    .btn-change:hover { color: var(--maroon); }
+
+    /* ─── Loading ─────────────────────────────────────────── */
+    #loading-section { display: none; text-align: center; padding: 3rem 0; }
+    .loading-ring { width: 64px; height: 64px; margin: 0 auto 1.5rem; border-radius: 50%; border: 2px solid var(--beige-mid); border-top-color: var(--forest); animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-label { font-family: var(--font-display); font-style: italic; font-size: 1.4rem; font-weight: 300; color: var(--forest-dark); margin-bottom: 0.35rem; }
+    .loading-sub { font-size: 0.8rem; font-weight: 200; color: var(--gray-green); letter-spacing: 0.06em; }
+    .loading-dots { display: inline-flex; gap: 4px; margin-left: 3px; vertical-align: middle; }
+    .loading-dots span { width: 4px; height: 4px; border-radius: 50%; background: var(--sage); animation: dot 1.4s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+
+    /* ─── Results ─────────────────────────────────────────── */
+    #results-section { display: none; animation: fadeUp 0.7s var(--ease-out) both; }
+
+    .results-divider { width: 100%; height: 1px; background: var(--beige-mid); margin-bottom: 2.5rem; }
+
+    /* Header row */
+    .results-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .results-header-left {}
+    .results-eyebrow { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--forest); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem; }
+    .results-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--forest); }
+    .results-style-name { font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 300; color: var(--forest-dark); margin-bottom: 0.5rem; }
+    .results-style-name em { font-style: italic; color: var(--maroon); }
+    .results-overview { font-size: 0.9rem; font-weight: 200; line-height: 1.9; color: #4a4a40; max-width: 60ch; }
+    .estimate-pill {
+      background: var(--forest-dark); color: var(--cream); border-radius: 10px; padding: 1.2rem 1.6rem;
+      white-space: nowrap; align-self: flex-start;
+    }
+    .estimate-label { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage-light); margin-bottom: 0.3rem; }
+    .estimate-value { font-family: var(--font-display); font-size: 1.6rem; font-weight: 300; color: var(--cream); }
+
+    /* Item grid */
+    .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+    .item-card {
+      background: var(--beige); border: 1px solid var(--beige-mid); border-radius: 10px; padding: 1.5rem;
+      transition: transform 0.25s var(--ease-out), box-shadow 0.25s;
+    }
+    .item-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(30,51,32,0.08); }
+    .item-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; }
+    .item-num-name { display: flex; align-items: center; gap: 0.75rem; }
+    .item-num {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; color: var(--cream);
+    }
+    .item-num.type-plant { background: var(--maroon); }
+    .item-num.type-decor { background: var(--forest); }
+    .item-name { font-family: var(--font-display); font-size: 1.2rem; font-weight: 300; color: var(--forest-dark); line-height: 1.2; }
+    .item-type-tag {
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.25rem 0.65rem; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+    }
+    .item-type-tag.type-plant { background: rgba(122,46,48,0.08); color: var(--maroon); border: 1px solid rgba(122,46,48,0.15); }
+    .item-type-tag.type-decor { background: rgba(45,74,48,0.08); color: var(--forest); border: 1px solid rgba(45,74,48,0.15); }
+    .item-placement {
+      font-size: 0.78rem; font-weight: 200; color: var(--gray-green);
+      margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .item-desc { font-size: 0.84rem; font-weight: 200; line-height: 1.75; color: #4a4a40; margin-bottom: 1rem; }
+    .item-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .item-price { font-family: var(--font-display); font-size: 1.1rem; font-weight: 300; color: var(--maroon); }
+    .shop-links { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .shop-link {
+      font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.3rem 0.7rem; border-radius: 100px;
+      border: 1px solid var(--beige-mid); color: var(--gray-green); background: var(--cream);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .shop-link:hover { background: var(--forest); border-color: var(--forest); color: var(--cream); }
+
+    /* Design note */
+    .design-note {
+      background: var(--forest-dark); border-radius: 10px; padding: 1.5rem 2rem;
+      display: flex; gap: 1.2rem; align-items: flex-start; margin-bottom: 3rem;
+    }
+    .design-note-icon { flex-shrink: 0; margin-top: 0.1rem; }
+    .design-note-label { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage-light); margin-bottom: 0.3rem; }
+    .design-note-text { font-family: var(--font-display); font-style: italic; font-size: 1.1rem; font-weight: 300; color: var(--cream); line-height: 1.5; }
+
+    /* Redesign section */
+    .redesign-section {
+      border: 1px solid var(--beige-mid); border-radius: 12px; padding: 2rem 2.5rem;
+      background: var(--beige); margin-bottom: 1.5rem;
+    }
+    .redesign-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 300; color: var(--forest-dark); margin-bottom: 0.4rem; }
+    .redesign-sub { font-size: 0.85rem; font-weight: 200; color: var(--gray-green); margin-bottom: 1.2rem; }
+    .redesign-row { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .btn-redesign {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: var(--font-body); font-weight: 300;
+      font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--forest); color: var(--cream);
+      padding: 0.8rem 1.8rem; border-radius: 100px; border: none; cursor: pointer;
+      transition: background 0.25s, transform 0.25s;
+    }
+    .btn-redesign:hover { background: var(--maroon); transform: translateY(-1px); }
+    .btn-redesign:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Try again */
+    .try-again-row { text-align: center; padding-top: 0.5rem; }
+    .btn-try-again {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: var(--font-body); font-weight: 300;
+      font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gray-green); border: 1px solid var(--beige-mid);
+      padding: 0.8rem 1.8rem; border-radius: 100px; background: transparent;
+      cursor: pointer; transition: border-color 0.25s, color 0.25s;
+    }
+    .btn-try-again:hover { border-color: var(--maroon); color: var(--maroon); }
+
+    /* Error */
+    .error-box { border: 1.5px solid rgba(122,46,48,0.35); border-radius: 10px; background: rgba(122,46,48,0.06); padding: 2rem 2.5rem; margin-bottom: 1.5rem; }
+    .error-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 300; color: var(--maroon); margin-bottom: 0.6rem; }
+    .error-msg { font-size: 0.92rem; font-weight: 300; color: #3a3a32; line-height: 1.8; }
+    .error-msg code { font-family: monospace; font-size: 0.88rem; background: rgba(122,46,48,0.08); padding: 0.15em 0.5em; border-radius: 4px; }
+    .server-warning { background: var(--maroon); color: var(--cream); text-align: center; padding: 0.9rem 1.5rem; font-size: 0.85rem; font-weight: 200; line-height: 1.7; }
+    .server-warning strong { font-weight: 400; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+    .footer-mini { background: var(--forest-dark); padding: 2rem 0; text-align: center; }
+    .footer-mini p { font-size: 0.72rem; color: rgba(245,237,224,0.3); letter-spacing: 0.05em; }
+
+    @media (max-width: 800px) {
+      .nav-links { display: none; }
+      .preview-grid { grid-template-columns: 1fr; }
+      .items-grid { grid-template-columns: 1fr; }
+      .results-header { flex-direction: column; }
+      .btn-design { align-self: stretch; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="server-warning" id="server-warning" style="display:none">
+    <strong>Heads up:</strong> Open Terminal and run
+    <code style="background:rgba(255,255,255,0.15);padding:0.1em 0.5em;border-radius:4px;font-family:monospace">python3 ~/Desktop/Web\ Applications/server.py</code>
+    then visit <code style="background:rgba(255,255,255,0.15);padding:0.1em 0.5em;border-radius:4px;font-family:monospace">http://localhost:3000/build.html</code>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="sidebar-logo" />
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1 1l11 11M12 1L1 12"/></svg>
+      </button>
+    </div>
+    <p class="sidebar-eyebrow">Explore the Studio</p>
+    <nav class="sidebar-nav">
+      <a href="discover.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="14" height="18" rx="2"/>
+            <path d="M8 7h6M8 11h6M8 15h4"/>
+            <path d="M8 2h6a1 1 0 0 1 0 2H8a1 1 0 0 1 0-2z"/>
+          </svg>
+        </div>
+        <div><p class="sidebar-item-name">Discover</p><p class="sidebar-item-desc">Identify any plant instantly</p></div>
+      </a>
+      <a href="health.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 19.5S3 13.5 3 8a5 5 0 0 1 8-4A5 5 0 0 1 19 8c0 5.5-8 11.5-8 11.5z"/>
+          </svg>
+        </div>
+        <div><p class="sidebar-item-name">Health</p><p class="sidebar-item-desc">Diagnose & revive your plants</p></div>
+      </a>
+      <a href="build.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 5H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-4"/>
+            <path d="M17.5 2.5l2 2-7 7H10v-2l7.5-7z"/>
+          </svg>
+        </div>
+        <div><p class="sidebar-item-name">Build</p><p class="sidebar-item-desc">Design your perfect space</p></div>
+      </a>
+    </nav>
+    <div class="sidebar-footer">© 2026 Vinge Studios — Botanical Living</div>
+  </aside>
+
+  <nav class="nav" id="nav">
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="index.html">
+      <img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="nav-logo" />
+    </a>
+  </nav>
+
+  <header class="page-header">
+    <div class="container page-header-inner">
+      <p class="page-eyebrow">Space Designer</p>
+      <h1 class="page-title">Build your <em>space</em></h1>
+      <p class="page-sub">Upload a photo of any room and choose a style — we'll suggest exactly which plants and decor to add, and link you to where to buy them.</p>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- Upload -->
+      <div id="upload-panel">
+        <div class="upload-zone" id="drop-zone">
+          <input type="file" id="file-input" class="upload-input" accept="image/jpeg,image/png,image/webp" />
+          <div class="upload-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#2d4a30" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="22" height="18" rx="2"/>
+              <circle cx="10" cy="12" r="2.5"/>
+              <path d="M3 20l6-5 4 4 3-3 9 7"/>
+            </svg>
+          </div>
+          <h2 class="upload-title">Drop a photo of your space</h2>
+          <p class="upload-sub">A living room, bedroom, office, hallway — any space you want to bring to life with plants and decor</p>
+          <span class="upload-browse">Choose a Photo</span>
+          <p class="upload-formats">JPG · PNG · WEBP · Auto-optimised before sending</p>
+        </div>
+      </div>
+
+      <!-- Workspace -->
+      <div id="workspace">
+
+        <!-- Preview: photo + style picker -->
+        <div class="preview-grid">
+          <div class="photo-wrap" id="photo-wrap">
+            <img id="preview-img" src="" alt="Your space" />
+          </div>
+          <div class="preview-side">
+            <p class="preview-eyebrow">Choose a style</p>
+            <h2 class="preview-heading">How do you want your <em>space to feel?</em></h2>
+            <p class="preview-desc">Select a design style and we'll suggest plants and decor that fit perfectly, then link you to every item.</p>
+
+            <div>
+              <p class="style-picker-label">Design style</p>
+              <div class="style-pills" id="style-pills">
+                <button class="style-pill active" data-style="Modern">Modern</button>
+                <button class="style-pill" data-style="Minimalist">Minimalist</button>
+                <button class="style-pill" data-style="Farmhouse">Farmhouse</button>
+                <button class="style-pill" data-style="Coastal">Coastal</button>
+                <button class="style-pill" data-style="Bohemian">Bohemian</button>
+                <button class="style-pill" data-style="Japandi">Japandi</button>
+                <button class="style-pill" data-style="Scandinavian">Scandinavian</button>
+                <button class="style-pill" data-style="Industrial">Industrial</button>
+              </div>
+            </div>
+
+            <div>
+              <p class="style-picker-label">Your plant experience</p>
+              <div class="style-pills" id="level-pills">
+                <button class="style-pill active" data-level="Beginner">Beginner</button>
+                <button class="style-pill" data-level="Intermediate">Intermediate</button>
+                <button class="style-pill" data-level="Expert">Expert</button>
+              </div>
+              <p class="level-hint" id="level-hint">Easy-care, hard-to-kill plants recommended</p>
+            </div>
+
+            <button class="btn-design" id="design-btn">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 2L11.5 7H16.5L12.5 10.5L14 15.5L9 12.5L4 15.5L5.5 10.5L1.5 7H6.5L9 2Z"/>
+              </svg>
+              Design My Space
+            </button>
+            <button class="btn-change" id="change-btn">← Change photo</button>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading-section">
+          <div class="loading-ring"></div>
+          <p class="loading-label">Designing your space</p>
+          <p class="loading-sub">Curating plants and decor <span class="loading-dots"><span></span><span></span><span></span></span></p>
+        </div>
+
+        <!-- Results -->
+        <div id="results-section">
+
+          <div class="results-divider"></div>
+
+          <div class="results-header">
+            <div class="results-header-left">
+              <p class="results-eyebrow">Design Complete</p>
+              <h2 class="results-style-name"><em id="r-style-name">Modern</em> style</h2>
+              <p class="results-overview" id="r-overview"></p>
+            </div>
+            <div class="estimate-pill">
+              <p class="estimate-label">Estimated total</p>
+              <p class="estimate-value" id="r-estimate">—</p>
+            </div>
+          </div>
+
+          <!-- Photo with hotspot overlays -->
+          <div class="photo-wrap" id="results-photo-wrap" style="margin-bottom:2.5rem">
+            <img id="results-img" src="" alt="Your styled space" />
+            <!-- hotspots injected by JS -->
+          </div>
+
+          <!-- Items grid -->
+          <div class="items-grid" id="r-items"></div>
+
+          <!-- Design note -->
+          <div class="design-note" id="r-design-note">
+            <div class="design-note-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#8fa878" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="10" r="8"/>
+                <path d="M10 9v5M10 6.5v.5"/>
+              </svg>
+            </div>
+            <div>
+              <p class="design-note-label">Designer's tip</p>
+              <p class="design-note-text" id="r-note-text">—</p>
+            </div>
+          </div>
+
+          <!-- Redesign with different style -->
+          <div class="redesign-section">
+            <p class="redesign-title">Try a different style</p>
+            <p class="redesign-sub">Select a style and experience level, then regenerate the design with your same photo.</p>
+            <p class="style-picker-label" style="margin-top:1rem">Design style</p>
+            <div class="style-pills" id="redesign-pills"></div>
+            <p class="style-picker-label" style="margin-top:1rem">Your plant experience</p>
+            <div class="style-pills" id="redesign-level-pills"></div>
+            <p class="level-hint" id="redesign-level-hint" style="margin-top:0.4rem">Easy-care, hard-to-kill plants recommended</p>
+            <div class="redesign-row">
+              <button class="btn-redesign" id="redesign-btn">
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 7.5a5.5 5.5 0 1 1 1.5 3.8M2 12V8h4"/>
+                </svg>
+                Redesign
+              </button>
+            </div>
+          </div>
+
+          <div class="try-again-row">
+            <button class="btn-try-again" id="try-again-btn">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="10" height="10" rx="1"/><path d="M5 2v2M9 2v2M5 10v2M9 10v2M2 5h2M10 5h2M2 9h2M10 9h2"/>
+              </svg>
+              Upload a New Photo
+            </button>
+          </div>
+
+        </div><!-- /results-section -->
+      </div><!-- /workspace -->
+
+    </div>
+  </main>
+
+  <footer class="footer-mini"><p>© 2026 Vinge Studios — Botanical Living</p></footer>
+
+  <script>
+    if (location.protocol === 'file:') document.getElementById('server-warning').style.display = 'block';
+
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); }, { passive: true });
+
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidebar      = document.getElementById('sidebar');
+    const overlay      = document.getElementById('sidebar-overlay');
+    const sidebarClose = document.getElementById('sidebar-close');
+    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('open'); hamburgerBtn.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); hamburgerBtn.classList.remove('open'); document.body.style.overflow = ''; }
+    hamburgerBtn.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+    sidebarClose.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    /* ─── Elements ───────────────────────────────────────── */
+    const uploadPanel    = document.getElementById('upload-panel');
+    const workspace      = document.getElementById('workspace');
+    const dropZone       = document.getElementById('drop-zone');
+    const fileInput      = document.getElementById('file-input');
+    const previewImg     = document.getElementById('preview-img');
+    const resultsImg     = document.getElementById('results-img');
+    const changeBtn      = document.getElementById('change-btn');
+    const designBtn      = document.getElementById('design-btn');
+    const loadingSection = document.getElementById('loading-section');
+    const resultsSection = document.getElementById('results-section');
+    const tryAgainBtn    = document.getElementById('try-again-btn');
+    const redesignBtn    = document.getElementById('redesign-btn');
+
+    const STYLES = ['Modern','Minimalist','Farmhouse','Coastal','Bohemian','Japandi','Scandinavian','Industrial'];
+    const LEVELS = ['Beginner','Intermediate','Expert'];
+    const LEVEL_HINTS = {
+      'Beginner':     'Easy-care, hard-to-kill plants recommended',
+      'Intermediate': 'Plants with moderate care needs suggested',
+      'Expert':       'Rare and demanding plants encouraged',
+    };
+    let currentFile = null;
+    let selectedStyle = 'Modern';
+    let selectedLevel = 'Beginner';
+    let lastData = null;
+
+    /* ─── Style pills (preview) ─────────────────────────────── */
+    document.querySelectorAll('#style-pills .style-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#style-pills .style-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedStyle = btn.dataset.style;
+      });
+    });
+
+    /* ─── Level pills (preview) ─────────────────────────────── */
+    const levelHint = document.getElementById('level-hint');
+    document.querySelectorAll('#level-pills .style-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#level-pills .style-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedLevel = btn.dataset.level;
+        levelHint.textContent = LEVEL_HINTS[selectedLevel];
+      });
+    });
+
+    // Build redesign style pills
+    const redesignPillsEl = document.getElementById('redesign-pills');
+    STYLES.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'style-pill';
+      btn.dataset.style = s;
+      btn.textContent = s;
+      if (s === selectedStyle) btn.classList.add('active');
+      btn.addEventListener('click', () => {
+        redesignPillsEl.querySelectorAll('.style-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedStyle = s;
+      });
+      redesignPillsEl.appendChild(btn);
+    });
+
+    // Build redesign level pills
+    const redesignLevelPillsEl = document.getElementById('redesign-level-pills');
+    const redesignLevelHint    = document.getElementById('redesign-level-hint');
+    LEVELS.forEach(l => {
+      const btn = document.createElement('button');
+      btn.className = 'style-pill';
+      btn.dataset.level = l;
+      btn.textContent = l;
+      if (l === selectedLevel) btn.classList.add('active');
+      btn.addEventListener('click', () => {
+        redesignLevelPillsEl.querySelectorAll('.style-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedLevel = l;
+        redesignLevelHint.textContent = LEVEL_HINTS[l];
+      });
+      redesignLevelPillsEl.appendChild(btn);
+    });
+
+    /* ─── Upload ─────────────────────────────────────────── */
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault(); dropZone.classList.remove('drag-over');
+      if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+    });
+
+    function loadFile(file) {
+      if (!file.type.match(/^image\/(jpeg|png|webp)$/)) { alert('Please upload a JPG, PNG, or WEBP image.'); return; }
+      if (file.size > 50 * 1024 * 1024) { alert('Please choose an image under 50 MB.'); return; }
+      currentFile = file;
+      previewImg.src = URL.createObjectURL(file);
+      uploadPanel.style.display = 'none';
+      workspace.className = '';
+      workspace.style.display = 'block';
+      loadingSection.style.display = 'none';
+      resultsSection.style.display = 'none';
+      designBtn.disabled = false;
+      const e = document.getElementById('error-box');
+      if (e) e.remove();
+    }
+
+    /* ─── Reset ──────────────────────────────────────────── */
+    changeBtn.addEventListener('click', reset);
+    tryAgainBtn.addEventListener('click', reset);
+    function reset() {
+      fileInput.value = ''; currentFile = null;
+      previewImg.src = ''; resultsImg.src = '';
+      workspace.style.display = 'none'; workspace.className = '';
+      uploadPanel.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ─── Design / Redesign ──────────────────────────────── */
+    designBtn.addEventListener('click', () => runDesign());
+    redesignBtn.addEventListener('click', () => {
+      const activeStyle = redesignPillsEl.querySelector('.style-pill.active');
+      if (activeStyle) selectedStyle = activeStyle.dataset.style;
+      const activeLevel = redesignLevelPillsEl.querySelector('.style-pill.active');
+      if (activeLevel) selectedLevel = activeLevel.dataset.level;
+      runDesign();
+    });
+
+    async function runDesign() {
+      if (!currentFile) return;
+      workspace.classList.add('analyzing');
+      workspace.classList.remove('has-results');
+      loadingSection.style.display = 'block';
+      resultsSection.style.display = 'none';
+      loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      try {
+        const base64 = await compress(currentFile);
+        const res = await fetch('/api/build-space', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64, mediaType: 'image/jpeg', style: selectedStyle, experienceLevel: selectedLevel }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+        lastData = data;
+        renderResults(data);
+      } catch (err) {
+        loadingSection.style.display = 'none';
+        workspace.className = '';
+        const msg = err.message || '';
+        showError(
+          msg.includes('Failed to fetch') ? 'Server is not running' : 'Something went wrong',
+          msg.includes('Failed to fetch')
+            ? `Run <code>python3 ~/Desktop/Web\\ Applications/server.py</code> in Terminal, then visit <code>http://localhost:3000/build.html</code>`
+            : msg
+        );
+      }
+    }
+
+    /* ─── Compress ───────────────────────────────────────── */
+    function compress(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onerror = reject;
+        img.onload = () => {
+          const MAX = 1600, Q = 0.82;
+          let { width: w, height: h } = img;
+          if (w > MAX || h > MAX) {
+            if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+            else        { w = Math.round(w * MAX / h); h = MAX; }
+          }
+          const c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          c.getContext('2d').drawImage(img, 0, 0, w, h);
+          c.toBlob(blob => {
+            const r = new FileReader();
+            r.onload  = () => resolve(r.result.split(',')[1]);
+            r.onerror = reject;
+            r.readAsDataURL(blob);
+          }, 'image/jpeg', Q);
+        };
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    /* ─── Render results ─────────────────────────────────── */
+    function renderResults(d) {
+      document.getElementById('r-style-name').textContent = d.style || selectedStyle;
+      document.getElementById('r-overview').textContent   = d.overview || '';
+      document.getElementById('r-estimate').textContent   = d.totalEstimate || '—';
+      document.getElementById('r-note-text').textContent  = d.designNote || '';
+
+      // Show the same uploaded photo in results
+      resultsImg.src = previewImg.src;
+
+      // Items list
+      const itemsEl = document.getElementById('r-items');
+      itemsEl.innerHTML = '';
+      (d.items || []).forEach(item => {
+        const typeClass = item.type === 'plant' ? 'type-plant' : 'type-decor';
+        const q = encodeURIComponent(item.searchTerms || item.name);
+        itemsEl.innerHTML += `
+          <div class="item-card" data-id="${item.id}">
+            <div class="item-card-top">
+              <div class="item-num-name">
+                <div class="item-num ${typeClass}">${item.id}</div>
+                <p class="item-name">${item.name}</p>
+              </div>
+              <span class="item-type-tag ${typeClass}">${item.type}</span>
+            </div>
+            <p class="item-placement">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+                <circle cx="6" cy="5" r="2"/><path d="M6 1C3.8 1 2 2.8 2 5c0 3 4 7 4 7s4-4 4-7c0-2.2-1.8-4-4-4z"/>
+              </svg>
+              ${item.placement}
+            </p>
+            <p class="item-desc">${item.description}</p>
+            <div class="item-footer">
+              <span class="item-price">${item.priceRange}</span>
+              <div class="shop-links">
+                <a class="shop-link" href="https://www.amazon.com/s?k=${q}" target="_blank" rel="noopener">Amazon</a>
+                <a class="shop-link" href="https://www.etsy.com/search?q=${q}" target="_blank" rel="noopener">Etsy</a>
+                <a class="shop-link" href="https://www.google.com/search?q=${q}&tbm=shop" target="_blank" rel="noopener">Google</a>
+              </div>
+            </div>
+          </div>`;
+      });
+
+      // Hotspots on photo — position after image loads
+      const wrap = document.getElementById('results-photo-wrap');
+      wrap.querySelectorAll('.hotspot').forEach(h => h.remove());
+
+      const placeHotspots = () => {
+        const img = resultsImg;
+        const iw = img.naturalWidth, ih = img.naturalHeight;
+        const cw = wrap.offsetWidth, ch = wrap.offsetHeight;
+        if (!iw || !cw) return;
+
+        // Calculate rendered image bounds (object-fit: contain)
+        const imgRatio = iw / ih;
+        const ctnRatio = cw / ch;
+        let rw, rh, ox, oy;
+        if (imgRatio > ctnRatio) { rw = cw; rh = cw / imgRatio; ox = 0; oy = (ch - rh) / 2; }
+        else { rh = ch; rw = ch * imgRatio; ox = (cw - rw) / 2; oy = 0; }
+
+        (d.items || []).forEach(item => {
+          if (item.x === undefined || item.y === undefined) return;
+          const pin = document.createElement('div');
+          pin.className = `hotspot type-${item.type}`;
+          pin.textContent = item.id;
+          pin.style.left = (ox + (item.x / 100) * rw) + 'px';
+          pin.style.top  = (oy + (item.y / 100) * rh) + 'px';
+          pin.title = item.name;
+          // Click scrolls to the item card
+          pin.addEventListener('click', () => {
+            const card = itemsEl.querySelector(`[data-id="${item.id}"]`);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          });
+          wrap.appendChild(pin);
+        });
+      };
+
+      // Sync redesign pills to current style and level
+      redesignPillsEl.querySelectorAll('.style-pill').forEach(b => {
+        b.classList.toggle('active', b.dataset.style === (d.style || selectedStyle));
+      });
+      redesignLevelPillsEl.querySelectorAll('.style-pill').forEach(b => {
+        b.classList.toggle('active', b.dataset.level === selectedLevel);
+      });
+      redesignLevelHint.textContent = LEVEL_HINTS[selectedLevel];
+
+      // Show results FIRST so the photo has layout dimensions, then place hotspots
+      loadingSection.style.display = 'none';
+      workspace.classList.remove('analyzing');
+      workspace.classList.add('has-results');
+      resultsSection.style.display = 'block';
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      const doPlace = () => requestAnimationFrame(placeHotspots);
+      if (resultsImg.complete && resultsImg.naturalWidth) {
+        doPlace();
+      } else {
+        resultsImg.onload = doPlace;
+      }
+      window.addEventListener('resize', placeHotspots);
+    }
+
+    /* ─── Error ──────────────────────────────────────────── */
+    function showError(title, detail) {
+      const existing = document.getElementById('error-box');
+      if (existing) existing.remove();
+      const el = document.createElement('div');
+      el.id = 'error-box'; el.className = 'error-box';
+      el.innerHTML = `<p class="error-title">${title}</p><p class="error-msg">${detail}</p>`;
+      document.querySelector('.preview-grid').after(el);
+    }
+  </script>
+</body>
+</html>
