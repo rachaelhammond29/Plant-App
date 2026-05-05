@@ -21,7 +21,7 @@ from pathlib import Path
 # for this local dev tool (only calls api.anthropic.com).
 _ssl_ctx = ssl._create_unverified_context()
 
-PORT = 3000
+PORT = int(os.environ.get("PORT", 3000))
 SERVE_DIR = Path(__file__).parent
 
 
