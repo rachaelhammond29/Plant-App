@@ -757,15 +757,9 @@
 
         const msg = err.message || '';
         if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch')) {
-          showError(
-            'server-not-running',
-            'Server is not running',
-            `Open Terminal and run this command, then try again:<br><br>
-             <code>python3 ~/Desktop/Web\\ Applications/server.py</code><br><br>
-             Then make sure you're visiting <code>http://localhost:3000/discover.html</code> — not opening the file directly.`
-          );
+          showError('network-error', 'Connection error', 'Could not reach the server. Please try again in a moment.');
         } else {
-          showError('api-error', 'Something went wrong', msg);
+          showError('api-error', 'Something went wrong', msg || 'An unexpected error occurred. Please try again.');
         }
       }
     });
