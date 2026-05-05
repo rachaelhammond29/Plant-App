@@ -26,7 +26,7 @@ SERVE_DIR = Path(__file__).parent
 
 
 def load_api_key():
-    key = os.environ.get("ANTHROPIC_API_KEY")
+    key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if key:
         return key
     txt_file = SERVE_DIR / "api-key.txt"
