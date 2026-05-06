@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prune Guide — Vinge Studios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,200;0,8..60,300;0,8..60,400;1,8..60,200;1,8..60,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Tokens ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream:       #f5ede0;
+      --beige:       #e8dece;
+      --beige-mid:   #d8ccb8;
+      --sage:        #8fa878;
+      --sage-light:  #b8c9b0;
+      --rose:        #a86868;
+      --rose-muted:  #c49898;
+      --maroon:      #7a2e30;
+      --amber:       #5a4220;
+      --amber-light: #c8a060;
+      --gray-green:  #6b7d68;
+      --forest:      #2d4a30;
+      --forest-dark: #1e3320;
+      --charcoal:    #1c1c1c;
+      --font-display:'Cormorant Garamond', Georgia, serif;
+      --font-body:   'Source Serif 4', Georgia, serif;
+      --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+      --dot-dead:    #111111;
+      --dot-shape:   #2d8a35;
+      --dot-optional:#d4a017;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); font-weight: 300; color: var(--charcoal); background: var(--cream); overflow-x: hidden; }
+    img  { display: block; max-width: 100%; }
+    a    { text-decoration: none; color: inherit; }
+
+    /* ─── Nav ────────────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0.5rem 2rem;
+      display: flex; align-items: center; gap: 1.2rem;
+      background: rgba(245,237,224,0.96); backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+      transition: padding 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .nav.scrolled { padding: 0.3rem 2rem; }
+    .nav-logo { height: 160px; width: auto; transition: height 0.45s cubic-bezier(0.16,1,0.3,1); }
+    .nav.scrolled .nav-logo { height: 80px; }
+
+    .hamburger {
+      flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      width: 44px; height: 44px; padding: 0; background: none; border: none; cursor: pointer; z-index: 102;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 1.5px; border-radius: 2px; background: var(--forest-dark);
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .sidebar-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,51,32,0.45); backdrop-filter: blur(3px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: min(360px, 88vw); z-index: 201; background: var(--cream);
+      transform: translateX(-100%);
+      transition: transform 0.42s cubic-bezier(0.16,1,0.3,1);
+      display: flex; flex-direction: column;
+      box-shadow: 12px 0 60px rgba(0,0,0,0.18);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-top {
+      padding: 1.6rem 1.8rem 1.4rem; border-bottom: 1px solid var(--beige-mid);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sidebar-logo { height: 64px; width: auto; }
+    .sidebar-close {
+      width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+      background: none; border: 1px solid var(--beige-mid); border-radius: 50%; cursor: pointer; color: var(--gray-green);
+      transition: border-color 0.2s, color 0.2s, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sidebar-close:hover { border-color: var(--maroon); color: var(--maroon); transform: rotate(90deg); }
+    .sidebar-eyebrow { padding: 1.8rem 1.8rem 0.6rem; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-green); }
+    .sidebar-nav { display: flex; flex-direction: column; flex: 1; }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 1.2rem; padding: 1.25rem 1.8rem;
+      text-decoration: none; color: inherit; border-left: 2px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .sidebar-item:hover { background: var(--beige); border-left-color: var(--maroon); }
+    .sidebar-icon {
+      width: 46px; height: 46px; flex-shrink: 0; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--beige); border: 1px solid var(--beige-mid); color: var(--forest);
+      transition: background 0.2s, color 0.2s;
+    }
+    .sidebar-item:hover .sidebar-icon { background: var(--forest); color: var(--cream); }
+    .sidebar-item-name { font-family: var(--font-display); font-size: 1.4rem; font-weight: 300; color: var(--forest-dark); line-height: 1.1; margin-bottom: 0.2rem; }
+    .sidebar-item-desc { font-size: 0.76rem; font-weight: 200; color: var(--gray-green); }
+    .sidebar-footer { padding: 1.2rem 1.8rem 1.8rem; border-top: 1px solid var(--beige-mid); font-size: 0.68rem; color: rgba(107,125,104,0.5); letter-spacing: 0.05em; }
+
+    /* ─── Page header ────────────────────────────────────── */
+    .page-header {
+      padding: max(210px, 9rem) 0 4.5rem; text-align: center;
+      background: var(--amber); position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 50% 60%, rgba(200,140,40,0.25) 0%, rgba(90,66,32,0.5) 50%, transparent 80%);
+    }
+    .page-header-inner { position: relative; z-index: 1; }
+    .page-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--amber-light); margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .page-eyebrow::before, .page-eyebrow::after {
+      content: ''; display: inline-block; width: 24px; height: 1px; background: var(--amber-light);
+    }
+    .page-title {
+      font-family: var(--font-display); font-weight: 300;
+      font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1.1;
+      color: var(--cream); margin-bottom: 1rem;
+    }
+    .page-title em { font-style: italic; color: var(--amber-light); }
+    .page-sub {
+      font-size: 0.95rem; font-weight: 200; line-height: 1.8;
+      color: rgba(245,237,224,0.6); max-width: 48ch; margin: 0 auto;
+    }
+
+    /* ─── Main ───────────────────────────────────────────── */
+    .main { padding: 5rem 0 7rem; }
+    .container { width: min(860px, 100% - 3rem); margin-inline: auto; }
+
+    /* ─── Upload zone (initial) ──────────────────────────── */
+    #upload-panel { animation: fadeUp 0.6s var(--ease-out) both; }
+    .upload-zone {
+      border: 1.5px dashed var(--beige-mid); border-radius: 14px;
+      background: var(--beige); padding: 5rem 2rem; text-align: center; cursor: pointer;
+      transition: border-color 0.25s, background 0.25s, transform 0.3s var(--ease-out);
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--amber-light); background: #ece5d6; transform: translateY(-3px);
+    }
+    .upload-zone.drag-over { border-style: solid; }
+    .upload-input { display: none; }
+    .upload-icon {
+      width: 72px; height: 72px; margin: 0 auto 1.8rem;
+      background: var(--cream); border: 1px solid var(--beige-mid); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .upload-zone:hover .upload-icon { background: var(--amber); border-color: var(--amber); }
+    .upload-zone:hover .upload-icon svg { stroke: var(--cream); }
+    .upload-title {
+      font-family: var(--font-display); font-size: 1.8rem; font-weight: 300;
+      color: var(--forest-dark); margin-bottom: 0.5rem;
+    }
+    .upload-sub { font-size: 0.88rem; font-weight: 200; color: var(--gray-green); margin-bottom: 1.6rem; }
+    .upload-browse {
+      display: inline-block; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--amber); color: var(--cream); padding: 0.75rem 2rem; border-radius: 100px;
+      transition: background 0.25s;
+    }
+    .upload-zone:hover .upload-browse { background: var(--forest); }
+    .upload-formats {
+      margin-top: 1.2rem; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(107,125,104,0.6);
+    }
+
+    /* ─── Multi-photo workspace ──────────────────────────── */
+    #photo-workspace { display: none; animation: fadeUp 0.5s var(--ease-out) both; }
+
+    .photo-thumbs {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;
+    }
+    @media (min-width: 600px) {
+      .photo-thumbs { grid-template-columns: repeat(4, 1fr); }
+    }
+    .thumb-item {
+      position: relative; border-radius: 10px; overflow: hidden;
+      aspect-ratio: 1; background: var(--beige);
+      border: 1.5px solid var(--beige-mid);
+    }
+    .thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb-remove {
+      position: absolute; top: 6px; right: 6px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(30,51,32,0.75); border: none; cursor: pointer;
+      color: var(--cream); font-size: 14px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .thumb-remove:hover { background: var(--maroon); }
+    .thumb-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(30,51,32,0.6); color: var(--cream);
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.3rem 0.5rem; text-align: center;
+    }
+    .thumb-add {
+      aspect-ratio: 1; border-radius: 10px; border: 1.5px dashed var(--beige-mid);
+      background: var(--beige); cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.4rem;
+      color: var(--gray-green); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .thumb-add:hover { border-color: var(--amber-light); background: #ece5d6; color: var(--amber); }
+    .thumb-add svg { width: 24px; height: 24px; stroke: currentColor; }
+
+    .photo-actions {
+      display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 0.5rem;
+    }
+    .btn-analyse {
+      font-family: var(--font-display); font-size: 1.15rem; font-weight: 400; letter-spacing: 0.04em;
+      background: var(--amber); color: var(--cream); border: none; cursor: pointer;
+      padding: 1rem 3rem; border-radius: 100px;
+      transition: background 0.25s, transform 0.2s var(--ease-out), box-shadow 0.25s;
+      box-shadow: 0 4px 20px rgba(90,66,32,0.3);
+    }
+    .btn-analyse:hover { background: var(--forest); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(90,66,32,0.35); }
+    .btn-analyse:active { transform: translateY(0); }
+    .btn-analyse:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .photo-count-hint { font-size: 0.78rem; color: var(--gray-green); font-weight: 200; }
+
+    /* ─── Loading ────────────────────────────────────────── */
+    #loading-section {
+      display: none; text-align: center; padding: 5rem 2rem;
+      animation: fadeUp 0.5s var(--ease-out) both;
+    }
+    .loading-spinner {
+      width: 48px; height: 48px; margin: 0 auto 2rem;
+      border: 2px solid var(--beige-mid); border-top-color: var(--amber);
+      border-radius: 50%; animation: spin 0.9s linear infinite;
+    }
+    .loading-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; color: var(--forest-dark); margin-bottom: 0.5rem; }
+    .loading-sub { font-size: 0.88rem; font-weight: 200; color: var(--gray-green); }
+
+    /* ─── Results ────────────────────────────────────────── */
+    #results-section { display: none; animation: fadeUp 0.6s var(--ease-out) both; }
+
+    .result-header { margin-bottom: 2.5rem; }
+    .result-plant-name {
+      font-family: var(--font-display); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 300;
+      color: var(--forest-dark); line-height: 1.1; margin-bottom: 0.75rem;
+    }
+    .result-goal {
+      font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--amber); margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .result-goal::before { content: ''; display: block; width: 20px; height: 1px; background: var(--amber); flex-shrink: 0; }
+    .result-overview {
+      font-size: 0.95rem; line-height: 1.85; color: rgba(28,28,28,0.75); font-weight: 200;
+    }
+
+    /* ─── Legend ─────────────────────────────────────────── */
+    .prune-legend {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      padding: 1rem 1.4rem; border-radius: 10px;
+      background: var(--beige); border: 1px solid var(--beige-mid);
+      margin-bottom: 2rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.55rem; }
+    .legend-dot {
+      width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+    .legend-dot.dead     { background: var(--dot-dead); }
+    .legend-dot.shape    { background: var(--dot-shape); }
+    .legend-dot.optional { background: var(--dot-optional); }
+    .legend-label { font-size: 0.78rem; font-weight: 300; color: var(--charcoal); }
+
+    /* ─── Photo results grid ─────────────────────────────── */
+    .photo-results {
+      display: grid; grid-template-columns: 1fr; gap: 2rem;
+    }
+    @media (min-width: 600px) {
+      .photo-results.multi { grid-template-columns: repeat(2, 1fr); }
+    }
+    .photo-result-card { background: var(--beige); border-radius: 14px; overflow: hidden; border: 1px solid var(--beige-mid); }
+    .photo-result-label {
+      padding: 0.8rem 1.2rem; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gray-green); border-bottom: 1px solid var(--beige-mid);
+    }
+    .photo-result-wrap {
+      position: relative; background: var(--forest-dark);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .result-photo { width: 100%; display: block; max-height: 480px; object-fit: contain; }
+
+    /* ─── Pruning dots ───────────────────────────────────── */
+    .prune-dot {
+      position: absolute; width: 20px; height: 20px; border-radius: 50%;
+      transform: translate(-50%, -50%); cursor: pointer;
+      border: 2.5px solid rgba(255,255,255,0.9);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      transition: transform 0.2s var(--ease-out), box-shadow 0.2s;
+      z-index: 10;
+    }
+    .prune-dot:hover { transform: translate(-50%, -50%) scale(1.3); box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+    .prune-dot.dead     { background: var(--dot-dead); }
+    .prune-dot.shape    { background: var(--dot-shape); }
+    .prune-dot.optional { background: var(--dot-optional); }
+
+    .prune-dot-tooltip {
+      position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+      background: rgba(28,28,28,0.92); color: #fff;
+      font-size: 0.72rem; font-family: var(--font-body); font-weight: 300; line-height: 1.4;
+      padding: 0.45rem 0.75rem; border-radius: 6px; white-space: nowrap;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.18s;
+    }
+    .prune-dot-tooltip::after {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: rgba(28,28,28,0.92);
+    }
+    .prune-dot:hover .prune-dot-tooltip { opacity: 1; }
+
+    /* ─── Try again ──────────────────────────────────────── */
+    .try-again-wrap { text-align: center; margin-top: 3rem; }
+    .btn-try-again {
+      font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gray-green); background: none; border: 1px solid var(--beige-mid);
+      padding: 0.7rem 2rem; border-radius: 100px; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-try-again:hover { border-color: var(--amber); color: var(--amber); }
+
+    /* ─── Error box ──────────────────────────────────────── */
+    .error-box {
+      border: 1px solid rgba(122,46,48,0.25); border-radius: 12px;
+      background: rgba(122,46,48,0.05); padding: 1.8rem 2rem; margin-bottom: 2rem;
+    }
+    .error-title { font-family: var(--font-display); font-size: 1.4rem; color: var(--maroon); margin-bottom: 0.5rem; }
+    .error-msg { font-size: 0.88rem; font-weight: 200; color: var(--gray-green); line-height: 1.7; }
+
+    /* ─── Animations ─────────────────────────────────────── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    @keyframes spin   { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="sidebar-logo" />
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M1 1l12 12M13 1L1 13"/>
+        </svg>
+      </button>
+    </div>
+    <p class="sidebar-eyebrow">Explore the Studio</p>
+    <nav class="sidebar-nav">
+      <a href="discover.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="14" height="18" rx="2"/>
+            <path d="M8 7h6M8 11h6M8 15h4"/>
+            <path d="M8 2h6a1 1 0 0 1 0 2H8a1 1 0 0 1 0-2z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Discover</p>
+          <p class="sidebar-item-desc">Identify any plant instantly</p>
+        </div>
+      </a>
+      <a href="health.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 19.5S3 13.5 3 8a5 5 0 0 1 8-4A5 5 0 0 1 19 8c0 5.5-8 11.5-8 11.5z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Health</p>
+          <p class="sidebar-item-desc">Diagnose & revive your plants</p>
+        </div>
+      </a>
+      <a href="build.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 5H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-4"/>
+            <path d="M17.5 2.5l2 2-7 7H10v-2l7.5-7z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Build</p>
+          <p class="sidebar-item-desc">Design your perfect space</p>
+        </div>
+      </a>
+      <a href="prune.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="2.5"/>
+            <circle cx="6" cy="16" r="2.5"/>
+            <path d="M8.5 7.5L17 17M8.5 14.5L17 5"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Prune</p>
+          <p class="sidebar-item-desc">Find exactly where to cut</p>
+        </div>
+      </a>
+    </nav>
+    <div class="sidebar-footer">© 2026 Vinge Studios — Botanical Living</div>
+  </aside>
+
+  <nav class="nav" id="nav">
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="index.html">
+      <img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="nav-logo" />
+    </a>
+  </nav>
+
+  <!-- ─── Page header ──────────────────────────────────────── -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <p class="page-eyebrow">AI Pruning Guide</p>
+      <h1 class="page-title">Know exactly <em>where to cut</em></h1>
+      <p class="page-sub">Upload up to 4 photos from different angles and our AI will mark every pruning point — colour-coded so you always know why.</p>
+    </div>
+  </header>
+
+  <!-- ─── Main ─────────────────────────────────────────────── -->
+  <main class="main">
+    <div class="container">
+
+      <!-- Upload panel -->
+      <div id="upload-panel">
+        <div class="upload-zone" id="drop-zone">
+          <input type="file" id="file-input" class="upload-input" accept="image/jpeg,image/png,image/webp" multiple />
+          <div class="upload-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 18V6M9 11l5-5 5 5"/>
+              <path d="M4 20v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/>
+            </svg>
+          </div>
+          <p class="upload-title">Upload your plant photos</p>
+          <p class="upload-sub">Add 1–4 photos from different angles for the most accurate pruning guide</p>
+          <span class="upload-browse">Choose Photos</span>
+          <p class="upload-formats">JPG · PNG · WEBP &nbsp;·&nbsp; Up to 4 photos</p>
+        </div>
+      </div>
+
+      <!-- Multi-photo workspace -->
+      <div id="photo-workspace">
+        <div class="photo-thumbs" id="photo-thumbs"></div>
+        <div class="photo-actions">
+          <p class="photo-count-hint" id="photo-count-hint">1 photo added — add more angles for a better analysis</p>
+          <button class="btn-analyse" id="analyse-btn">Analyse My Plant</button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading-section">
+        <div class="loading-spinner"></div>
+        <p class="loading-title">Analysing your plant…</p>
+        <p class="loading-sub">Our AI is examining every stem, leaf, and branch</p>
+      </div>
+
+      <!-- Results -->
+      <div id="results-section">
+
+        <div class="result-header">
+          <h2 class="result-plant-name" id="result-plant-name"></h2>
+          <p class="result-goal" id="result-goal"></p>
+          <p class="result-overview" id="result-overview"></p>
+        </div>
+
+        <div class="prune-legend">
+          <div class="legend-item">
+            <div class="legend-dot dead"></div>
+            <span class="legend-label">Dead / diseased — remove</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot shape"></div>
+            <span class="legend-label">Trim for shape / growth</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot optional"></div>
+            <span class="legend-label">Optional improvement</span>
+          </div>
+        </div>
+
+        <div class="photo-results" id="photo-results"></div>
+
+        <div class="try-again-wrap">
+          <button class="btn-try-again" id="try-again-btn">Analyse Another Plant</button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    /* ─── Nav scroll ─────────────────────────────────────── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* ─── Sidebar ────────────────────────────────────────── */
+    const sidebar       = document.getElementById('sidebar');
+    const overlay       = document.getElementById('sidebar-overlay');
+    const hamburgerBtn  = document.getElementById('hamburger-btn');
+    const sidebarClose  = document.getElementById('sidebar-close');
+
+    function openSidebar()  { sidebar.classList.add('open'); overlay.classList.add('open'); hamburgerBtn.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); hamburgerBtn.classList.remove('open'); document.body.style.overflow = ''; }
+
+    hamburgerBtn.addEventListener('click', openSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    /* ─── State ──────────────────────────────────────────── */
+    const MAX_PHOTOS = 4;
+    let files = []; // array of File objects
+
+    /* ─── Element refs ───────────────────────────────────── */
+    const uploadPanel     = document.getElementById('upload-panel');
+    const dropZone        = document.getElementById('drop-zone');
+    const fileInput       = document.getElementById('file-input');
+    const photoWorkspace  = document.getElementById('photo-workspace');
+    const photoThumbs     = document.getElementById('photo-thumbs');
+    const photoCountHint  = document.getElementById('photo-count-hint');
+    const analyseBtn      = document.getElementById('analyse-btn');
+    const loadingSection  = document.getElementById('loading-section');
+    const resultsSection  = document.getElementById('results-section');
+    const tryAgainBtn     = document.getElementById('try-again-btn');
+
+    /* ─── Upload zone interactions ───────────────────────── */
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault(); dropZone.classList.remove('drag-over');
+      addFiles(Array.from(e.dataTransfer.files));
+    });
+    fileInput.addEventListener('change', () => {
+      addFiles(Array.from(fileInput.files));
+      fileInput.value = '';
+    });
+
+    function addFiles(newFiles) {
+      const accepted = newFiles.filter(f => f.type.startsWith('image/'));
+      const remaining = MAX_PHOTOS - files.length;
+      files = [...files, ...accepted.slice(0, remaining)];
+      if (files.length > 0) showWorkspace();
+    }
+
+    function showWorkspace() {
+      uploadPanel.style.display = 'none';
+      photoWorkspace.style.display = 'block';
+      renderThumbs();
+    }
+
+    function renderThumbs() {
+      photoThumbs.innerHTML = '';
+      files.forEach((file, i) => {
+        const url  = URL.createObjectURL(file);
+        const item = document.createElement('div');
+        item.className = 'thumb-item';
+        item.innerHTML = `
+          <img src="${url}" class="thumb-img" alt="Photo ${i + 1}" />
+          <button class="thumb-remove" data-index="${i}" aria-label="Remove photo ${i + 1}">×</button>
+          <span class="thumb-label">Photo ${i + 1}</span>`;
+        photoThumbs.appendChild(item);
+      });
+
+      if (files.length < MAX_PHOTOS) {
+        const addBtn = document.createElement('div');
+        addBtn.className = 'thumb-add';
+        addBtn.setAttribute('role', 'button');
+        addBtn.setAttribute('tabindex', '0');
+        addBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add angle`;
+        addBtn.addEventListener('click', () => fileInput.click());
+        addBtn.addEventListener('keydown', e => { if (e.key === 'Enter') fileInput.click(); });
+        photoThumbs.appendChild(addBtn);
+      }
+
+      photoThumbs.querySelectorAll('.thumb-remove').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const idx = parseInt(btn.dataset.index);
+          files.splice(idx, 1);
+          if (files.length === 0) {
+            photoWorkspace.style.display = 'none';
+            uploadPanel.style.display = 'block';
+          } else {
+            renderThumbs();
+          }
+        });
+      });
+
+      const n = files.length;
+      if (n === MAX_PHOTOS) {
+        photoCountHint.textContent = `${n} photos added — ready to analyse`;
+      } else {
+        photoCountHint.textContent = `${n} photo${n > 1 ? 's' : ''} added — add more angles for a better analysis`;
+      }
+    }
+
+    /* ─── Image compression ──────────────────────────────── */
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.onload = e => {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Failed to load image'));
+          img.onload = () => {
+            try {
+              const MAX_DIM = 1600;
+              let { width: w, height: h } = img;
+              if (w > MAX_DIM || h > MAX_DIM) {
+                if (w > h) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+                else       { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+              resolve(dataUrl.split(',')[1]);
+            } catch (err) {
+              reject(err);
+            }
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ─── Analyse ────────────────────────────────────────── */
+    analyseBtn.addEventListener('click', async () => {
+      if (!files.length) return;
+
+      photoWorkspace.style.display = 'none';
+      loadingSection.style.display = 'block';
+      loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      try {
+        const encoded = await Promise.all(files.map(f => toBase64(f)));
+        const images  = encoded.map(image => ({ image, mediaType: 'image/jpeg' }));
+
+        const res  = await fetch('/api/prune-plant', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ images }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+
+        renderResults(data);
+
+      } catch (err) {
+        loadingSection.style.display = 'none';
+        photoWorkspace.style.display = 'block';
+        showError(err.message || 'An unexpected error occurred. Please try again.');
+      }
+    });
+
+    /* ─── Render results ─────────────────────────────────── */
+    function renderResults(data) {
+      loadingSection.style.display = 'none';
+
+      document.getElementById('result-plant-name').textContent = data.plantName || 'Your Plant';
+      document.getElementById('result-goal').textContent       = data.pruningGoal || '';
+      document.getElementById('result-overview').textContent   = data.overview || '';
+
+      const photoResultsEl = document.getElementById('photo-results');
+      photoResultsEl.innerHTML = '';
+
+      const imgEntries = data.images || [];
+      photoResultsEl.className = 'photo-results' + (imgEntries.length > 1 ? ' multi' : '');
+
+      imgEntries.forEach((imgData, i) => {
+        const file    = files[imgData.imageIndex] || files[i];
+        if (!file) return;
+        const blobUrl = URL.createObjectURL(file);
+
+        const card = document.createElement('div');
+        card.className = 'photo-result-card';
+        card.innerHTML = `
+          <div class="photo-result-label">Photo ${imgData.imageIndex + 1}</div>
+          <div class="photo-result-wrap" id="photo-wrap-${i}">
+            <img src="${blobUrl}" class="result-photo" id="result-img-${i}" alt="Plant photo ${i + 1}" />
+          </div>`;
+        photoResultsEl.appendChild(card);
+
+        const wrap = card.querySelector('.photo-result-wrap');
+        const img  = card.querySelector('.result-photo');
+        const points = imgData.pruningPoints || [];
+
+        function placeDots() {
+          wrap.querySelectorAll('.prune-dot').forEach(d => d.remove());
+          if (!points.length) return;
+
+          const iw = img.naturalWidth;
+          const ih = img.naturalHeight;
+          const dw = img.offsetWidth;
+          const dh = img.offsetHeight;
+          if (!dw || !dh || !iw || !ih) return;
+
+          const scale  = Math.min(dw / iw, dh / ih);
+          const rendW  = iw * scale;
+          const rendH  = ih * scale;
+          const offX   = (dw - rendW) / 2;
+          const offY   = (dh - rendH) / 2;
+
+          points.forEach(pt => {
+            const dot = document.createElement('div');
+            dot.className = `prune-dot ${pt.type}`;
+            const px = offX + (pt.x / 100) * rendW;
+            const py = offY + (pt.y / 100) * rendH;
+            dot.style.left = px + 'px';
+            dot.style.top  = py + 'px';
+
+            const tip = document.createElement('div');
+            tip.className = 'prune-dot-tooltip';
+            tip.textContent = pt.label;
+            dot.appendChild(tip);
+            wrap.appendChild(dot);
+          });
+        }
+
+        if (img.complete && img.naturalWidth) {
+          requestAnimationFrame(placeDots);
+        } else {
+          img.onload = () => requestAnimationFrame(placeDots);
+        }
+      });
+
+      resultsSection.style.display = 'block';
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* ─── Try again ──────────────────────────────────────── */
+    tryAgainBtn.addEventListener('click', () => {
+      files = [];
+      document.getElementById('photo-results').innerHTML = '';
+      resultsSection.style.display = 'none';
+      uploadPanel.style.display    = 'block';
+      photoWorkspace.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* ─── Error ──────────────────────────────────────────── */
+    function showError(msg) {
+      const existing = document.getElementById('error-box');
+      if (existing) existing.remove();
+      const el = document.createElement('div');
+      el.id = 'error-box';
+      el.className = 'error-box';
+      el.innerHTML = `
+        <p class="error-title">Something went wrong</p>
+        <p class="error-msg">${msg}</p>`;
+      photoWorkspace.before(el);
+    }
+  </script>
+</body>
+</html>

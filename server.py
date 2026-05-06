@@ -154,6 +154,41 @@ Rules:
 - searchTerms should be a good Amazon/Etsy search query for buying this exact item."""
 
 
+PRUNE_PROMPT = """You are an expert horticulturist and plant pruning specialist. The user has uploaded 1–4 photos of a plant from different angles. Carefully analyze all images and identify specific pruning points on each photo.
+
+Return ONLY valid JSON — no markdown, no code fences, no extra text. Use this exact structure:
+
+{
+  "plantName": "Best guess at plant species, or 'Unknown plant' if unclear",
+  "overview": "2–3 sentences describing the plant's current condition and overall pruning approach.",
+  "pruningGoal": "One sentence describing the primary benefit of the recommended pruning.",
+  "images": [
+    {
+      "imageIndex": 0,
+      "pruningPoints": [
+        {
+          "x": 45,
+          "y": 62,
+          "label": "Cut dead stem at base",
+          "type": "dead"
+        }
+      ]
+    }
+  ]
+}
+
+Rules:
+- x and y are integers 0–100: percentage position from the top-left of that specific image (x=0 left, x=100 right, y=0 top, y=100 bottom). Place each point precisely on the stem, leaf, or branch to cut.
+- type must be exactly "dead", "shape", or "optional":
+  - "dead" — remove dead, dying, or diseased growth
+  - "shape" — trim to encourage bushier growth, redirect energy, or improve plant form
+  - "optional" — beneficial but not urgent cuts
+- label: under 8 words, specific (e.g. "Remove yellowing lower leaf").
+- Include 2–5 pruning points per image where relevant. If an image needs no pruning, use an empty pruningPoints array.
+- imageIndex is 0-based and must match the order the images were provided.
+- Only include entries for images that were actually provided — never invent extra image entries."""
+
+
 # ── HTTP Handler ───────────────────────────────────────────────────────────
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -172,6 +207,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self._handle(HEALTH_PROMPT)
         elif self.path == "/api/build-space":
             self._handle_build()
+        elif self.path == "/api/prune-plant":
+            self._handle_prune()
         else:
             self.send_error(404)
 
@@ -197,6 +234,73 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length))
             self._call_claude(prompt, body)
+        except Exception as e:
+            self._send_json(500, {"error": str(e)})
+
+    def _handle_prune(self):
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length))
+            images = body.get("images", [])
+            if not images:
+                self._send_json(400, {"error": "No images provided."})
+                return
+            self._call_claude_multi(PRUNE_PROMPT, images)
+        except Exception as e:
+            self._send_json(500, {"error": str(e)})
+
+    def _call_claude_multi(self, prompt, images):
+        try:
+            api_key = load_api_key()
+            if not api_key:
+                self._send_json(400, {"error": "ANTHROPIC_API_KEY not set. Add it to api-key.txt."})
+                return
+
+            content = []
+            for img in images:
+                content.append({
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": img["mediaType"],
+                        "data": img["image"],
+                    },
+                })
+            content.append({"type": "text", "text": prompt})
+
+            payload = json.dumps({
+                "model": "claude-opus-4-7",
+                "max_tokens": 2000,
+                "messages": [{"role": "user", "content": content}],
+            }).encode()
+
+            req = urllib.request.Request(
+                "https://api.anthropic.com/v1/messages",
+                data=payload,
+                headers={
+                    "x-api-key": api_key,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+            )
+
+            with urllib.request.urlopen(req, context=_ssl_ctx) as resp:
+                result = json.loads(resp.read())
+
+            text = result["content"][0]["text"].strip()
+            if text.startswith("```"):
+                parts = text.split("```")
+                text = parts[1] if len(parts) > 1 else parts[0]
+                if text.startswith("json"):
+                    text = text[4:]
+            text = text.strip()
+
+            self._send_json(200, json.loads(text))
+
+        except urllib.error.HTTPError as e:
+            self._send_json(500, {"error": f"Anthropic API error: {e.read().decode()}"})
+        except json.JSONDecodeError as e:
+            self._send_json(500, {"error": f"Could not parse response: {e}"})
         except Exception as e:
             self._send_json(500, {"error": str(e)})
 

@@ -570,7 +570,7 @@
     }
     .collections-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 1.5rem;
     }
     .plant-card {
@@ -605,6 +605,7 @@
     .plant-card-bg.bg-1 { background: linear-gradient(160deg, #2d4a30 0%, #1e3320 100%); }
     .plant-card-bg.bg-2 { background: linear-gradient(160deg, #5a3535 0%, #3a1e1e 100%); }
     .plant-card-bg.bg-3 { background: linear-gradient(160deg, #4a5a45 0%, #2d3a28 100%); }
+    .plant-card-bg.bg-4 { background: linear-gradient(160deg, #5a4220 0%, #3a2a10 100%); }
     .plant-card-bg svg { width: 65%; opacity: 0.75; }
     .plant-card-tag {
       position: absolute;
@@ -1178,6 +1179,7 @@
       .about-grid { grid-template-columns: 1fr; gap: 3rem; }
       .about-visual { max-width: 480px; }
       .collections-grid { grid-template-columns: repeat(2, 1fr); }
+
       .services-grid { grid-template-columns: 1fr; }
       .services-header { flex-direction: column; align-items: flex-start; }
       .process-steps { grid-template-columns: repeat(2, 1fr); }
@@ -1243,6 +1245,19 @@
         <div>
           <p class="sidebar-item-name">Build</p>
           <p class="sidebar-item-desc">Design your perfect space</p>
+        </div>
+      </a>
+      <a href="prune.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="2.5"/>
+            <circle cx="6" cy="16" r="2.5"/>
+            <path d="M8.5 7.5L17 17M8.5 14.5L17 5"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Prune</p>
+          <p class="sidebar-item-desc">Find exactly where to cut</p>
         </div>
       </a>
     </nav>
@@ -1549,6 +1564,61 @@
             <h3 class="plant-card-name">Build</h3>
             <p class="plant-card-latin">Grow your collection</p>
             <p class="plant-card-desc">From a single statement piece to a fully layered interior, we help you build a living space that breathes with intention.</p>
+          </div>
+        </a>
+
+        <!-- Card 4 -->
+        <a href="prune.html" class="plant-card reveal reveal-delay-3">
+          <div class="plant-card-image">
+            <div class="plant-card-bg bg-4">
+              <!-- Prune: plant stem with scissors + colored cut-point dots -->
+              <svg viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Main stem -->
+                <line x1="80" y1="185" x2="80" y2="30" stroke="rgba(200,150,80,0.7)" stroke-width="3" stroke-linecap="round"/>
+                <!-- Left branch upper -->
+                <path d="M80 70 C68 65, 52 58, 38 50" stroke="rgba(190,140,70,0.65)" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- Right branch upper -->
+                <path d="M80 85 C92 80, 108 72, 122 64" stroke="rgba(190,140,70,0.65)" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- Left branch lower -->
+                <path d="M80 118 C66 112, 50 106, 36 98" stroke="rgba(180,130,60,0.6)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Right branch lower -->
+                <path d="M80 132 C94 126, 110 120, 124 112" stroke="rgba(180,130,60,0.6)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Leaves upper left -->
+                <ellipse cx="36" cy="46" rx="12" ry="7" fill="rgba(120,90,40,0.5)" stroke="rgba(200,160,90,0.45)" stroke-width="1.2" transform="rotate(-30 36 46)"/>
+                <!-- Leaves upper right -->
+                <ellipse cx="124" cy="60" rx="12" ry="7" fill="rgba(115,85,38,0.5)" stroke="rgba(195,155,85,0.4)" stroke-width="1.2" transform="rotate(20 124 60)"/>
+                <!-- Leaves lower left -->
+                <ellipse cx="34" cy="94" rx="11" ry="6.5" fill="rgba(110,80,35,0.5)" stroke="rgba(190,150,80,0.4)" stroke-width="1.2" transform="rotate(-25 34 94)"/>
+                <!-- Leaves lower right -->
+                <ellipse cx="126" cy="108" rx="11" ry="6.5" fill="rgba(108,78,33,0.48)" stroke="rgba(188,148,78,0.38)" stroke-width="1.2" transform="rotate(22 126 108)"/>
+
+                <!-- Scissors at upper right branch cut point -->
+                <g transform="translate(104,56) rotate(25)">
+                  <path d="M0 0 L14 0" stroke="rgba(245,220,170,0.85)" stroke-width="2.2" stroke-linecap="round"/>
+                  <circle cx="-3" cy="0" r="4" fill="none" stroke="rgba(245,220,170,0.85)" stroke-width="1.6"/>
+                  <path d="M0 5 L14 5" stroke="rgba(245,220,170,0.85)" stroke-width="2.2" stroke-linecap="round"/>
+                  <circle cx="-3" cy="5" r="4" fill="none" stroke="rgba(245,220,170,0.85)" stroke-width="1.6"/>
+                </g>
+
+                <!-- Dead cut dot — black -->
+                <circle cx="80" cy="155" r="6" fill="#111111" stroke="rgba(255,255,255,0.7)" stroke-width="1.8"/>
+                <!-- Shape cut dot — green -->
+                <circle cx="80" cy="100" r="6" fill="#2d8a35" stroke="rgba(255,255,255,0.7)" stroke-width="1.8"/>
+                <!-- Optional cut dot — yellow -->
+                <circle cx="80" cy="55" r="6" fill="#d4a017" stroke="rgba(255,255,255,0.7)" stroke-width="1.8"/>
+
+                <!-- Dot legend labels -->
+                <text x="91" y="159" font-size="7" fill="rgba(245,220,170,0.7)" font-family="sans-serif">Dead</text>
+                <text x="91" y="104" font-size="7" fill="rgba(245,220,170,0.7)" font-family="sans-serif">Shape</text>
+                <text x="91" y="59" font-size="7" fill="rgba(245,220,170,0.7)" font-family="sans-serif">Optional</text>
+              </svg>
+            </div>
+            <span class="plant-card-tag">Pruning Guide</span>
+          </div>
+          <div class="plant-card-body">
+            <h3 class="plant-card-name">Prune</h3>
+            <p class="plant-card-latin">Shape your plant's future</p>
+            <p class="plant-card-desc">Upload up to 4 photos and let our AI mark exactly where to cut — colour-coded by purpose so every snip counts.</p>
           </div>
         </a>
 
