@@ -162,6 +162,7 @@ Return ONLY valid JSON — no markdown, no code fences, no extra text. Use this 
   "plantName": "Best guess at plant species, or 'Unknown plant' if unclear",
   "overview": "2–3 sentences describing the plant's current condition and overall pruning approach.",
   "pruningGoal": "One sentence describing the primary benefit of the recommended pruning.",
+  "youtubeSearchQuery": "how to prune fiddle leaf fig",
   "images": [
     {
       "imageIndex": 0,
@@ -186,7 +187,8 @@ Rules:
 - label: under 8 words, specific (e.g. "Remove yellowing lower leaf").
 - Include 2–5 pruning points per image where relevant. If an image needs no pruning, use an empty pruningPoints array.
 - imageIndex is 0-based and must match the order the images were provided.
-- Only include entries for images that were actually provided — never invent extra image entries."""
+- Only include entries for images that were actually provided — never invent extra image entries.
+- youtubeSearchQuery: a specific YouTube search string that would find a good pruning tutorial for this exact plant species (e.g. "how to prune fiddle leaf fig houseplant")."""
 
 
 # ── HTTP Handler ───────────────────────────────────────────────────────────

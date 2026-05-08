@@ -570,7 +570,7 @@
     }
     .collections-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
       gap: 1.5rem;
     }
     .plant-card {
@@ -606,6 +606,8 @@
     .plant-card-bg.bg-2 { background: linear-gradient(160deg, #5a3535 0%, #3a1e1e 100%); }
     .plant-card-bg.bg-3 { background: linear-gradient(160deg, #4a5a45 0%, #2d3a28 100%); }
     .plant-card-bg.bg-4 { background: linear-gradient(160deg, #5a4220 0%, #3a2a10 100%); }
+    .plant-card-bg.bg-5 { background: linear-gradient(160deg, #1a4545 0%, #0d2e2e 100%); }
+    .plant-card-bg.bg-6 { background: linear-gradient(160deg, #6b3a2a 0%, #4a2218 100%); }
     .plant-card-bg svg { width: 65%; opacity: 0.75; }
     .plant-card-tag {
       position: absolute;
@@ -1260,6 +1262,28 @@
           <p class="sidebar-item-desc">Find exactly where to cut</p>
         </div>
       </a>
+      <a href="dictionary.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Dictionary</p>
+          <p class="sidebar-item-desc">Browse 180+ plant profiles</p>
+        </div>
+      </a>
+      <a href="accessories.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Accessories</p>
+          <p class="sidebar-item-desc">Shop pots, lights, tools & more</p>
+        </div>
+      </a>
     </nav>
     <div class="sidebar-footer">© 2026 Vinge Studios — Botanical Living</div>
   </aside>
@@ -1619,6 +1643,86 @@
             <h3 class="plant-card-name">Prune</h3>
             <p class="plant-card-latin">Shape your plant's future</p>
             <p class="plant-card-desc">Upload up to 4 photos and let our AI mark exactly where to cut — colour-coded by purpose so every snip counts.</p>
+          </div>
+        </a>
+
+        <!-- Card 5 -->
+        <a href="dictionary.html" class="plant-card reveal reveal-delay-4">
+          <div class="plant-card-image">
+            <div class="plant-card-bg bg-5">
+              <!-- Dictionary: open book with A–Z letters -->
+              <svg viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Book body left page -->
+                <rect x="28" y="48" width="50" height="110" rx="4" fill="rgba(200,230,220,0.12)" stroke="rgba(180,220,210,0.4)" stroke-width="1.5"/>
+                <!-- Book body right page -->
+                <rect x="82" y="48" width="50" height="110" rx="4" fill="rgba(200,230,220,0.1)" stroke="rgba(180,220,210,0.35)" stroke-width="1.5"/>
+                <!-- Spine -->
+                <rect x="77" y="48" width="6" height="110" fill="rgba(150,200,190,0.25)"/>
+                <!-- Left page lines -->
+                <line x1="38" y1="70" x2="72" y2="70" stroke="rgba(180,220,210,0.35)" stroke-width="1.2"/>
+                <line x1="38" y1="82" x2="72" y2="82" stroke="rgba(180,220,210,0.3)" stroke-width="1"/>
+                <line x1="38" y1="94" x2="72" y2="94" stroke="rgba(180,220,210,0.3)" stroke-width="1"/>
+                <line x1="38" y1="106" x2="72" y2="106" stroke="rgba(180,220,210,0.3)" stroke-width="1"/>
+                <line x1="38" y1="118" x2="72" y2="118" stroke="rgba(180,220,210,0.25)" stroke-width="1"/>
+                <line x1="38" y1="130" x2="60" y2="130" stroke="rgba(180,220,210,0.25)" stroke-width="1"/>
+                <!-- Right page: A–Z text -->
+                <text x="92" y="72" font-size="9" fill="rgba(160,220,200,0.8)" font-family="serif" font-weight="bold">A — B</text>
+                <text x="92" y="86" font-size="9" fill="rgba(155,215,195,0.7)" font-family="serif">C — D</text>
+                <text x="92" y="100" font-size="9" fill="rgba(150,210,190,0.65)" font-family="serif">E — F</text>
+                <text x="92" y="114" font-size="9" fill="rgba(145,205,185,0.6)" font-family="serif">G — H</text>
+                <text x="92" y="128" font-size="9" fill="rgba(140,200,180,0.55)" font-family="serif">I — J</text>
+                <text x="92" y="142" font-size="9" fill="rgba(135,195,175,0.5)" font-family="serif">K — L</text>
+                <!-- Bottom curl -->
+                <path d="M28 158 Q80 168 132 158" stroke="rgba(180,220,210,0.3)" stroke-width="1.5" fill="none"/>
+              </svg>
+            </div>
+            <span class="plant-card-tag">Reference</span>
+          </div>
+          <div class="plant-card-body">
+            <h3 class="plant-card-name">Dictionary</h3>
+            <p class="plant-card-latin">180+ plants, instantly searchable</p>
+            <p class="plant-card-desc">Browse our A–Z plant library. Filter by care difficulty, search by common or botanical name, and get the facts you need at a glance.</p>
+          </div>
+        </a>
+
+        <!-- Card 6 -->
+        <a href="accessories.html" class="plant-card reveal reveal-delay-4">
+          <div class="plant-card-image">
+            <div class="plant-card-bg bg-6">
+              <svg viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Pot body -->
+                <path d="M42 108 L50 166 L110 166 L118 108 Z" fill="rgba(215,155,95,0.28)" stroke="rgba(240,190,140,0.5)" stroke-width="1.8" stroke-linejoin="round"/>
+                <!-- Pot rim -->
+                <rect x="38" y="97" width="84" height="14" rx="4" fill="rgba(220,165,105,0.32)" stroke="rgba(240,190,140,0.45)" stroke-width="1.6"/>
+                <!-- Soil -->
+                <ellipse cx="80" cy="101" rx="40" ry="9" fill="rgba(90,55,22,0.38)"/>
+                <!-- Stem -->
+                <line x1="80" y1="100" x2="80" y2="44" stroke="rgba(135,190,90,0.72)" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Left branch -->
+                <path d="M80 74 C66 67 52 63 44 57" stroke="rgba(125,178,82,0.62)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Right branch -->
+                <path d="M80 59 C94 52 108 48 116 42" stroke="rgba(125,178,82,0.62)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Left leaf -->
+                <ellipse cx="42" cy="53" rx="13" ry="8" fill="rgba(100,160,65,0.5)" stroke="rgba(140,200,95,0.38)" stroke-width="1.2" transform="rotate(-30 42 53)"/>
+                <!-- Right leaf -->
+                <ellipse cx="118" cy="38" rx="13" ry="8" fill="rgba(105,165,68,0.5)" stroke="rgba(140,200,95,0.38)" stroke-width="1.2" transform="rotate(20 118 38)"/>
+                <!-- Top leaf -->
+                <path d="M80 44 C77 32 78 22 80 16 C82 22 83 32 80 44" fill="rgba(115,178,76,0.6)" stroke="rgba(145,205,100,0.38)" stroke-width="1.2"/>
+                <!-- Price tag on pot -->
+                <rect x="54" y="126" width="52" height="28" rx="3" fill="rgba(245,237,224,0.1)" stroke="rgba(240,200,155,0.35)" stroke-width="1.2"/>
+                <line x1="61" y1="137" x2="99" y2="137" stroke="rgba(240,200,155,0.38)" stroke-width="1"/>
+                <line x1="61" y1="145" x2="86" y2="145" stroke="rgba(240,200,155,0.28)" stroke-width="1"/>
+                <!-- Tag string -->
+                <path d="M54 131 C46 127 42 122 44 116" stroke="rgba(240,200,155,0.4)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                <circle cx="44" cy="115" r="2.5" fill="none" stroke="rgba(240,200,155,0.5)" stroke-width="1.2"/>
+              </svg>
+            </div>
+            <span class="plant-card-tag">Shopping Guide</span>
+          </div>
+          <div class="plant-card-body">
+            <h3 class="plant-card-name">Accessories</h3>
+            <p class="plant-card-latin">Everything your plants need</p>
+            <p class="plant-card-desc">Browse curated pots, soil mixes, grow lights, tools, and more — with links to shop the best options for every plant and budget.</p>
           </div>
         </a>
 

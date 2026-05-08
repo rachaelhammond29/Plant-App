@@ -327,6 +327,24 @@
     }
     .prune-dot:hover .prune-dot-tooltip { opacity: 1; }
 
+    /* ─── Tutorial card ──────────────────────────────────── */
+    .tutorial-card {
+      display: flex; align-items: center; gap: 1.1rem;
+      padding: 1rem 1.4rem; border-radius: 12px;
+      background: var(--beige); border: 1px solid var(--beige-mid);
+      color: inherit; text-decoration: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s var(--ease-out);
+    }
+    .tutorial-card:hover { border-color: var(--amber-light); background: #ece5d6; transform: translateY(-2px); }
+    .tutorial-icon {
+      width: 46px; height: 46px; flex-shrink: 0; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: #ff0000; color: #fff;
+    }
+    .tutorial-label { font-family: var(--font-display); font-size: 1.2rem; font-weight: 300; color: var(--forest-dark); margin-bottom: 0.15rem; }
+    .tutorial-sub { font-size: 0.78rem; font-weight: 200; color: var(--gray-green); }
+    .tutorial-arrow { margin-left: auto; flex-shrink: 0; color: var(--gray-green); }
+
     /* ─── Try again ──────────────────────────────────────── */
     .try-again-wrap { text-align: center; margin-top: 3rem; }
     .btn-try-again {
@@ -413,6 +431,24 @@
           <p class="sidebar-item-desc">Find exactly where to cut</p>
         </div>
       </a>
+      <a href="dictionary.html" class="sidebar-item">
+        <div class="sidebar-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="sidebar-item-name">Dictionary</p>
+          <p class="sidebar-item-desc">Browse 180+ plant profiles</p>
+        </div>
+      </a>
+      <a href="accessories.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <div>
+          <p class="sidebar-item-name">Accessories</p>
+          <p class="sidebar-item-desc">Shop pots, lights, tools & more</p>
+        </div>
+      </a>
     </nav>
     <div class="sidebar-footer">© 2026 Vinge Studios — Botanical Living</div>
   </aside>
@@ -494,6 +530,19 @@
             <div class="legend-dot optional"></div>
             <span class="legend-label">Optional improvement</span>
           </div>
+        </div>
+
+        <div id="tutorial-wrap" style="display:none; margin-bottom: 2rem;">
+          <a id="tutorial-link" href="#" target="_blank" rel="noopener noreferrer" class="tutorial-card">
+            <div class="tutorial-icon">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="currentColor"><path d="M8 5.5l9 5.5-9 5.5V5.5z"/><rect x="1" y="1" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
+            <div>
+              <p class="tutorial-label">Watch a pruning tutorial</p>
+              <p class="tutorial-sub" id="tutorial-sub"></p>
+            </div>
+            <svg class="tutorial-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
         </div>
 
         <div class="photo-results" id="photo-results"></div>
@@ -686,6 +735,18 @@
       document.getElementById('result-goal').textContent       = data.pruningGoal || '';
       document.getElementById('result-overview').textContent   = data.overview || '';
 
+      const tutorialWrap = document.getElementById('tutorial-wrap');
+      const tutorialLink = document.getElementById('tutorial-link');
+      const tutorialSub  = document.getElementById('tutorial-sub');
+      if (data.youtubeSearchQuery) {
+        const query = encodeURIComponent(data.youtubeSearchQuery);
+        tutorialLink.href     = `https://www.youtube.com/results?search_query=${query}`;
+        tutorialSub.textContent = data.youtubeSearchQuery;
+        tutorialWrap.style.display = 'block';
+      } else {
+        tutorialWrap.style.display = 'none';
+      }
+
       const photoResultsEl = document.getElementById('photo-results');
       photoResultsEl.innerHTML = '';
 
@@ -757,6 +818,7 @@
     tryAgainBtn.addEventListener('click', () => {
       files = [];
       document.getElementById('photo-results').innerHTML = '';
+      document.getElementById('tutorial-wrap').style.display = 'none';
       resultsSection.style.display = 'none';
       uploadPanel.style.display    = 'block';
       photoWorkspace.style.display = 'none';

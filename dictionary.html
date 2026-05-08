@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plant Dictionary — Vinge Studios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,200;0,8..60,300;0,8..60,400;1,8..60,200;1,8..60,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream:       #f5ede0;
+      --beige:       #e8dece;
+      --beige-mid:   #d8ccb8;
+      --sage:        #8fa878;
+      --sage-light:  #b8c9b0;
+      --rose:        #a86868;
+      --rose-muted:  #c49898;
+      --maroon:      #7a2e30;
+      --teal:        #1a4545;
+      --teal-dark:   #0d2e2e;
+      --teal-light:  #4a9090;
+      --gray-green:  #6b7d68;
+      --forest:      #2d4a30;
+      --forest-dark: #1e3320;
+      --charcoal:    #1c1c1c;
+      --font-display:'Cormorant Garamond', Georgia, serif;
+      --font-body:   'Source Serif 4', Georgia, serif;
+      --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); font-weight: 300; color: var(--charcoal); background: var(--cream); overflow-x: hidden; }
+    img  { display: block; max-width: 100%; }
+    a    { text-decoration: none; color: inherit; }
+
+    /* ─── Nav ────────────────────────────────────────────── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0.5rem 2rem; display: flex; align-items: center; gap: 1.2rem;
+      background: rgba(245,237,224,0.96); backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+      transition: padding 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+    .nav.scrolled { padding: 0.3rem 2rem; }
+    .nav-logo { height: 160px; width: auto; transition: height 0.45s cubic-bezier(0.16,1,0.3,1); }
+    .nav.scrolled .nav-logo { height: 80px; }
+    .hamburger {
+      flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      width: 44px; height: 44px; padding: 0; background: none; border: none; cursor: pointer; z-index: 102;
+    }
+    .hamburger span { display: block; width: 24px; height: 1.5px; border-radius: 2px; background: var(--forest-dark); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ─── Sidebar ────────────────────────────────────────── */
+    .sidebar-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(30,51,32,0.45); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1); }
+    .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: min(360px, 88vw); z-index: 201; background: var(--cream); transform: translateX(-100%); transition: transform 0.42s cubic-bezier(0.16,1,0.3,1); display: flex; flex-direction: column; box-shadow: 12px 0 60px rgba(0,0,0,0.18); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-top { padding: 1.6rem 1.8rem 1.4rem; border-bottom: 1px solid var(--beige-mid); display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-logo { height: 64px; width: auto; }
+    .sidebar-close { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid var(--beige-mid); border-radius: 50%; cursor: pointer; color: var(--gray-green); transition: border-color 0.2s, color 0.2s, transform 0.3s cubic-bezier(0.16,1,0.3,1); }
+    .sidebar-close:hover { border-color: var(--maroon); color: var(--maroon); transform: rotate(90deg); }
+    .sidebar-eyebrow { padding: 1.8rem 1.8rem 0.6rem; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-green); }
+    .sidebar-nav { display: flex; flex-direction: column; flex: 1; }
+    .sidebar-item { display: flex; align-items: center; gap: 1.2rem; padding: 1.25rem 1.8rem; text-decoration: none; color: inherit; border-left: 2px solid transparent; transition: background 0.2s, border-color 0.2s; }
+    .sidebar-item:hover { background: var(--beige); border-left-color: var(--maroon); }
+    .sidebar-icon { width: 46px; height: 46px; flex-shrink: 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--beige); border: 1px solid var(--beige-mid); color: var(--forest); transition: background 0.2s, color 0.2s; }
+    .sidebar-item:hover .sidebar-icon { background: var(--forest); color: var(--cream); }
+    .sidebar-item-name { font-family: var(--font-display); font-size: 1.4rem; font-weight: 300; color: var(--forest-dark); line-height: 1.1; margin-bottom: 0.2rem; }
+    .sidebar-item-desc { font-size: 0.76rem; font-weight: 200; color: var(--gray-green); }
+    .sidebar-footer { padding: 1.2rem 1.8rem 1.8rem; border-top: 1px solid var(--beige-mid); font-size: 0.68rem; color: rgba(107,125,104,0.5); letter-spacing: 0.05em; }
+
+    /* ─── Page header ────────────────────────────────────── */
+    .page-header { padding: max(210px, 9rem) 0 4.5rem; text-align: center; background: var(--teal); position: relative; overflow: hidden; }
+    .page-header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 50% 60%, rgba(74,144,144,0.2) 0%, rgba(26,69,69,0.5) 50%, transparent 80%); }
+    .page-header-inner { position: relative; z-index: 1; }
+    .page-eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--teal-light); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+    .page-eyebrow::before, .page-eyebrow::after { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--teal-light); }
+    .page-title { font-family: var(--font-display); font-weight: 300; font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1.1; color: var(--cream); margin-bottom: 1rem; }
+    .page-title em { font-style: italic; color: var(--teal-light); }
+    .page-sub { font-size: 0.95rem; font-weight: 200; line-height: 1.8; color: rgba(245,237,224,0.6); max-width: 48ch; margin: 0 auto; }
+
+    /* ─── Main ───────────────────────────────────────────── */
+    .main { padding: 3.5rem 0 7rem; }
+    .container { width: min(1100px, 100% - 3rem); margin-inline: auto; }
+
+    /* ─── Search ─────────────────────────────────────────── */
+    .search-section { margin-bottom: 2.5rem; }
+    .search-wrap {
+      position: relative; max-width: 640px; margin: 0 auto;
+    }
+    .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--gray-green); pointer-events: none; }
+    .search-input {
+      width: 100%; padding: 1rem 3rem 1rem 3.2rem;
+      font-family: var(--font-body); font-size: 1rem; font-weight: 300; color: var(--charcoal);
+      background: #fff; border: 1.5px solid var(--beige-mid); border-radius: 100px;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .search-input:focus { border-color: var(--teal-light); box-shadow: 0 0 0 3px rgba(74,144,144,0.12); }
+    .search-input::placeholder { color: rgba(107,125,104,0.6); }
+    .search-clear {
+      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--gray-green);
+      font-size: 1.2rem; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; border-radius: 50%;
+      transition: background 0.2s, color 0.2s;
+    }
+    .search-clear.visible { display: flex; }
+    .search-clear:hover { background: var(--beige); color: var(--charcoal); }
+    .spell-suggest {
+      text-align: center; margin-top: 0.9rem; font-size: 0.88rem; font-weight: 200; color: var(--gray-green);
+      display: none;
+    }
+    .spell-suggest.visible { display: block; }
+    .suggest-link { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-weight: 400; background: none; border: none; font-family: var(--font-body); font-size: inherit; }
+    .suggest-link:hover { color: var(--teal-dark); }
+
+    /* ─── Nav row (alphabet + filter on one line) ───────── */
+    .nav-row {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .alpha-section { margin-bottom: 0; }
+    .alpha-nav {
+      display: flex; flex-wrap: nowrap; gap: 0.25rem; justify-content: flex-start;
+    }
+    .alpha-btn {
+      width: 26px; min-width: 26px; height: 28px; padding: 0;
+      font-family: var(--font-display); font-size: 0.82rem; font-weight: 400; letter-spacing: 0.01em;
+      background: var(--beige); border: 1px solid var(--beige-mid); border-radius: 7px; cursor: pointer;
+      color: var(--forest-dark); transition: background 0.18s, border-color 0.18s, color 0.18s;
+    }
+    .alpha-btn:hover { background: var(--beige-mid); }
+    .alpha-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .alpha-btn.all-btn { width: auto; min-width: auto; padding: 0 0.8rem; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-body); }
+
+    /* ─── Difficulty filter ──────────────────────────────── */
+    .filter-section { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; flex-wrap: nowrap; }
+    .filter-pill {
+      padding: 0.3rem 0.65rem; border-radius: 100px; border: 1px solid var(--beige-mid);
+      background: var(--beige); font-family: var(--font-body); font-size: 0.74rem; font-weight: 300;
+      cursor: pointer; color: var(--charcoal); transition: background 0.18s, border-color 0.18s, color 0.18s;
+      white-space: nowrap;
+    }
+    .filter-pill:hover { background: var(--beige-mid); }
+    .filter-pill.active { background: var(--forest); border-color: var(--forest); color: #fff; }
+    .filter-pill.active.beginner { background: var(--forest); border-color: var(--forest); }
+    .filter-pill.active.intermediate { background: #8a5a0a; border-color: #8a5a0a; }
+    .filter-pill.active.expert { background: var(--maroon); border-color: var(--maroon); }
+
+    /* ─── Results header ─────────────────────────────────── */
+    .results-meta { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .results-count { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-green); }
+    .results-heading { font-family: var(--font-display); font-size: 1.5rem; font-weight: 300; color: var(--forest-dark); }
+
+    /* ─── Plant grid ─────────────────────────────────────── */
+    .plant-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem;
+    }
+    .plant-card {
+      background: #fff; border: 1px solid var(--beige-mid); border-radius: 14px; padding: 1.4rem 1.5rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+      transition: box-shadow 0.2s, transform 0.2s var(--ease-out), border-color 0.2s;
+    }
+    .plant-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); border-color: var(--beige-mid); }
+    .plant-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+    .plant-common { font-family: var(--font-display); font-size: 1.3rem; font-weight: 400; color: var(--forest-dark); line-height: 1.2; }
+    .difficulty-badge {
+      flex-shrink: 0; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.25rem 0.6rem; border-radius: 100px; font-family: var(--font-body); font-weight: 400;
+    }
+    .difficulty-badge.Beginner     { background: rgba(45,74,48,0.1);   color: #2d4a30; }
+    .difficulty-badge.Intermediate { background: rgba(138,90,10,0.1);  color: #8a5a0a; }
+    .difficulty-badge.Expert       { background: rgba(122,46,48,0.1);  color: #7a2e30; }
+    .plant-botanical { font-style: italic; font-size: 0.82rem; font-weight: 200; color: var(--gray-green); }
+    .plant-family { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(107,125,104,0.6); }
+    .plant-desc { font-size: 0.84rem; font-weight: 200; line-height: 1.7; color: rgba(28,28,28,0.7); margin-top: 0.25rem; }
+
+    /* ─── No results ─────────────────────────────────────── */
+    .no-results { text-align: center; padding: 5rem 2rem; display: none; }
+    .no-results.visible { display: block; }
+    .no-results-title { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; color: var(--forest-dark); margin-bottom: 0.5rem; }
+    .no-results-sub { font-size: 0.9rem; font-weight: 200; color: var(--gray-green); }
+
+    /* ─── Animations ─────────────────────────────────────── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    .plant-grid { animation: fadeUp 0.4s var(--ease-out) both; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="sidebar-logo" />
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
+      </button>
+    </div>
+    <p class="sidebar-eyebrow">Explore the Studio</p>
+    <nav class="sidebar-nav">
+      <a href="discover.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="14" height="18" rx="2"/><path d="M8 7h6M8 11h6M8 15h4"/></svg></div>
+        <div><p class="sidebar-item-name">Discover</p><p class="sidebar-item-desc">Identify any plant instantly</p></div>
+      </a>
+      <a href="health.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19.5S3 13.5 3 8a5 5 0 0 1 8-4A5 5 0 0 1 19 8c0 5.5-8 11.5-8 11.5z"/></svg></div>
+        <div><p class="sidebar-item-name">Health</p><p class="sidebar-item-desc">Diagnose & revive your plants</p></div>
+      </a>
+      <a href="build.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-4"/><path d="M17.5 2.5l2 2-7 7H10v-2l7.5-7z"/></svg></div>
+        <div><p class="sidebar-item-name">Build</p><p class="sidebar-item-desc">Design your perfect space</p></div>
+      </a>
+      <a href="prune.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="16" r="2.5"/><path d="M8.5 7.5L17 17M8.5 14.5L17 5"/></svg></div>
+        <div><p class="sidebar-item-name">Prune</p><p class="sidebar-item-desc">Find exactly where to cut</p></div>
+      </a>
+      <a href="dictionary.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 1-2-2z"/><path d="M4 17h14M9 7h6M9 11h4"/></svg></div>
+        <div><p class="sidebar-item-name">Dictionary</p><p class="sidebar-item-desc">Browse the plant encyclopedia</p></div>
+      </a>
+    </nav>
+    <div class="sidebar-footer">© 2026 Vinge Studios — Botanical Living</div>
+  </aside>
+
+  <nav class="nav" id="nav">
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <a href="index.html"><img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="nav-logo" /></a>
+  </nav>
+
+  <header class="page-header">
+    <div class="page-header-inner">
+      <p class="page-eyebrow">Plant Encyclopedia</p>
+      <h1 class="page-title">The <em>complete</em> plant dictionary</h1>
+      <p class="page-sub">Browse every plant A–Z, search by name, and filter by care level to find exactly what you're looking for.</p>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- Search -->
+      <div class="search-section">
+        <div class="search-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="5.5"/><path d="M17 17l-4-4"/></svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Search by common or botanical name…" autocomplete="off" />
+          <button class="search-clear" id="search-clear" aria-label="Clear search">×</button>
+        </div>
+        <div class="spell-suggest" id="spell-suggest">
+          Did you mean <button class="suggest-link" id="suggest-btn"></button>?
+        </div>
+      </div>
+
+      <!-- A–Z navigation + difficulty filter on one row -->
+      <div class="nav-row">
+        <div class="alpha-section">
+          <div class="alpha-nav" id="alpha-nav">
+            <button class="alpha-btn all-btn active" data-letter="all">All</button>
+          </div>
+        </div>
+        <div class="filter-section" id="filter-pills">
+          <button class="filter-pill active" data-filter="All">All</button>
+          <button class="filter-pill beginner" data-filter="Beginner">Beginner</button>
+          <button class="filter-pill intermediate" data-filter="Intermediate">Intermediate</button>
+          <button class="filter-pill expert" data-filter="Expert">Expert</button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-meta" id="results-meta">
+        <p class="results-count" id="results-count"></p>
+      </div>
+      <div class="plant-grid" id="plant-grid"></div>
+      <div class="no-results" id="no-results">
+        <p class="no-results-title">No plants found</p>
+        <p class="no-results-sub" id="no-results-sub">Try a different search term or browse by letter above.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    /* ─── Nav + Sidebar ─────────────────────────────────── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
+
+    const sidebar      = document.getElementById('sidebar');
+    const overlay      = document.getElementById('sidebar-overlay');
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const openSidebar  = () => { sidebar.classList.add('open'); overlay.classList.add('open'); hamburgerBtn.classList.add('open'); document.body.style.overflow = 'hidden'; };
+    const closeSidebar = () => { sidebar.classList.remove('open'); overlay.classList.remove('open'); hamburgerBtn.classList.remove('open'); document.body.style.overflow = ''; };
+    hamburgerBtn.addEventListener('click', openSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    /* ─── Plant data ────────────────────────────────────── */
+    const plants = [
+      // A
+      { common: "African Violet",       botanical: "Saintpaulia ionantha",         family: "Gesneriaceae",    difficulty: "Beginner",     description: "Compact flowering plant with velvety leaves and vibrant purple, pink, or white blooms. Perfect for windowsills and thrives in bright indirect light." },
+      { common: "Aglaonema",            botanical: "Aglaonema commutatum",         family: "Araceae",         difficulty: "Beginner",     description: "Striking foliage plant with patterned leaves in green, red, and pink. Extremely tolerant of low light and neglect — ideal for any room." },
+      { common: "Air Plant",            botanical: "Tillandsia spp.",              family: "Bromeliaceae",    difficulty: "Beginner",     description: "Soil-free plants that absorb moisture and nutrients through their leaves. Fascinating, minimal care, and perfect for creative displays." },
+      { common: "Alocasia",             botanical: "Alocasia amazonica",           family: "Araceae",         difficulty: "Expert",       description: "Bold, dramatic plant with dark arrow-shaped leaves and striking white veins. Requires high humidity, consistent warmth, and attentive care." },
+      { common: "Aloe Vera",            botanical: "Aloe barbadensis miller",      family: "Asphodelaceae",   difficulty: "Beginner",     description: "Succulent with thick, fleshy leaves containing soothing gel. Thrives on neglect and loves bright, sunny windowsills." },
+      { common: "Anthurium",            botanical: "Anthurium andraeanum",         family: "Araceae",         difficulty: "Intermediate", description: "Known for its glossy heart-shaped spathes in red, pink, or white. Needs high humidity and bright indirect light to bloom continuously." },
+      { common: "Areca Palm",           botanical: "Dypsis lutescens",             family: "Arecaceae",       difficulty: "Beginner",     description: "Graceful feathery palm that brings a tropical feel indoors. One of the best air-purifying plants and tolerates a range of light conditions." },
+      { common: "Asparagus Fern",       botanical: "Asparagus setaceus",           family: "Asparagaceae",    difficulty: "Beginner",     description: "Delicate feathery foliage that is surprisingly tough. Not a true fern — tolerates more sun and occasional dry spells than it looks." },
+      { common: "Aspidistra",           botanical: "Aspidistra elatior",           family: "Asparagaceae",    difficulty: "Beginner",     description: "The ultimate low-maintenance plant, earning the nickname 'cast iron plant'. Survives almost any condition including deep shade and drought." },
+      { common: "Azalea",               botanical: "Rhododendron simsii",          family: "Ericaceae",       difficulty: "Intermediate", description: "Showstopping blooms in pink, red, white, or purple. Requires acidic soil, cool temperatures, and careful, consistent watering." },
+      // B
+      { common: "Baby Rubber Plant",    botanical: "Peperomia obtusifolia",        family: "Piperaceae",      difficulty: "Beginner",     description: "Compact, glossy-leaved plant that is nearly indestructible. Stores water in its thick leaves and tolerates irregular watering with ease." },
+      { common: "Bamboo Palm",          botanical: "Chamaedorea seifrizii",        family: "Arecaceae",       difficulty: "Beginner",     description: "Elegant palm with slender bamboo-like stems. Excellent at filtering indoor air pollutants and surprisingly tolerant of lower light." },
+      { common: "Banana Plant",         botanical: "Musa acuminata",               family: "Musaceae",        difficulty: "Intermediate", description: "Makes a dramatic tropical statement with enormous paddle-shaped leaves. Needs plenty of bright light, water, and space to thrive." },
+      { common: "Bird of Paradise",     botanical: "Strelitzia reginae",           family: "Strelitziaceae",  difficulty: "Intermediate", description: "Spectacular plant with large, paddle-shaped leaves and vivid orange flowers. Needs lots of light and patience to bloom indoors." },
+      { common: "Bird's Nest Fern",     botanical: "Asplenium nidus",              family: "Aspleniaceae",    difficulty: "Beginner",     description: "Lush tropical fern with broad, ripple-edged fronds unfurling from a central rosette. Loves warmth and consistent humidity." },
+      { common: "Boston Fern",          botanical: "Nephrolepis exaltata",         family: "Lomariopsidaceae",difficulty: "Intermediate", description: "Classic hanging fern with arching, feathery fronds. A humidity lover that makes a beautiful cascading statement in any room." },
+      { common: "Bromeliad",            botanical: "Guzmania lingulata",           family: "Bromeliaceae",    difficulty: "Beginner",     description: "Dramatic rosette plant with a bright central bloom that lasts for months. Keep water in its central cup and enjoy the colour." },
+      { common: "Burro's Tail",         botanical: "Sedum morganianum",            family: "Crassulaceae",    difficulty: "Beginner",     description: "Trailing succulent with plump, bead-like leaves forming rope-like stems. Perfect for hanging baskets and bright sunny spots." },
+      // C
+      { common: "Caladium",             botanical: "Caladium bicolor",             family: "Araceae",         difficulty: "Intermediate", description: "Stunning paper-thin leaves in bold combinations of red, pink, white, and green. A showstopper for shaded indoor spots." },
+      { common: "Calathea",             botanical: "Calathea orbifolia",           family: "Marantaceae",     difficulty: "Intermediate", description: "Prized for its beautifully patterned leaves that fold upward at night. Needs consistent humidity and bright indirect light." },
+      { common: "Cast Iron Plant",      botanical: "Aspidistra elatior",           family: "Asparagaceae",    difficulty: "Beginner",     description: "Virtually indestructible with dark, glossy leaves. Survives low light, irregular watering, and temperature extremes like no other plant." },
+      { common: "Chinese Evergreen",    botanical: "Aglaonema modestum",           family: "Araceae",         difficulty: "Beginner",     description: "One of the most adaptable houseplants, tolerating low light, dry air, and drought. Beautiful patterned foliage in countless varieties." },
+      { common: "Chinese Money Plant",  botanical: "Pilea peperomioides",          family: "Urticaceae",      difficulty: "Beginner",     description: "Quirky plant with distinctive coin-shaped leaves on long stems. Produces plenty of offsets to share with friends and family." },
+      { common: "Christmas Cactus",     botanical: "Schlumbergera bridgesii",      family: "Cactaceae",       difficulty: "Beginner",     description: "Produces spectacular tubular blooms in winter when many other plants rest. Easy to care for and reliably flowers year after year." },
+      { common: "Clivia",               botanical: "Clivia miniata",               family: "Amaryllidaceae",  difficulty: "Intermediate", description: "Produces clusters of vibrant orange or yellow trumpet-shaped flowers. Thrives with a cool, dry winter rest period." },
+      { common: "Croton",               botanical: "Codiaeum variegatum",          family: "Euphorbiaceae",   difficulty: "Intermediate", description: "Blazing foliage in red, orange, yellow, and green. Needs very bright light to maintain its intense, fiery coloration." },
+      { common: "String of Hearts",     botanical: "Ceropegia woodii",             family: "Apocynaceae",     difficulty: "Beginner",     description: "Delicate trailing vines with tiny heart-shaped leaves in silver and green. One of the most charming hanging plants available." },
+      // D
+      { common: "Desert Rose",          botanical: "Adenium obesum",               family: "Apocynaceae",     difficulty: "Intermediate", description: "Striking succulent with a swollen sculptural trunk and vivid pink or red flowers. Needs full sun and perfectly draining soil." },
+      { common: "Dieffenbachia",        botanical: "Dieffenbachia seguine",        family: "Araceae",         difficulty: "Beginner",     description: "Bold tropical foliage plant with large patterned leaves in green and cream. Fast-growing and tolerant of most indoor conditions." },
+      { common: "Donkey Tail",          botanical: "Sedum morganianum",            family: "Crassulaceae",    difficulty: "Beginner",     description: "Trailing succulent with plump, overlapping leaves resembling a donkey's tail. Wonderfully low-maintenance in a sunny spot." },
+      { common: "Dracaena",             botanical: "Dracaena fragrans",            family: "Asparagaceae",    difficulty: "Beginner",     description: "Iconic houseplant with strap-like leaves often edged in yellow or white. Extremely tolerant and one of the longest-lived indoor plants." },
+      { common: "Dumb Cane",            botanical: "Dieffenbachia amoena",         family: "Araceae",         difficulty: "Beginner",     description: "Large tropical-looking plant with cream and green patterned leaves. Thrives in low to medium light and grows quickly." },
+      { common: "Dwarf Umbrella",       botanical: "Schefflera arboricola",        family: "Araliaceae",      difficulty: "Beginner",     description: "Glossy umbrella-shaped leaf clusters on an upright tree-like plant. Easy to grow and naturally air-purifying." },
+      // E
+      { common: "Easter Cactus",        botanical: "Hatiora gaertneri",            family: "Cactaceae",       difficulty: "Beginner",     description: "Produces masses of vibrant red or pink flowers in spring. Very easy to care for and reliably blooms year after year." },
+      { common: "Echeveria",            botanical: "Echeveria elegans",            family: "Crassulaceae",    difficulty: "Beginner",     description: "Perfect rosette succulent with fleshy, powdery leaves in silver-green hues. One of the most popular and attractive succulents." },
+      { common: "Elephant Ear",         botanical: "Colocasia esculenta",          family: "Araceae",         difficulty: "Intermediate", description: "Enormous dramatic leaves shaped like elephant ears. Makes a bold tropical statement and loves humidity and consistent moisture." },
+      { common: "Emerald Ripple",       botanical: "Peperomia caperata",           family: "Piperaceae",      difficulty: "Beginner",     description: "Compact plant with deeply ridged dark green leaves and unusual cream flower spikes. Ideal for small spaces and terrariums." },
+      { common: "English Ivy",          botanical: "Hedera helix",                 family: "Araliaceae",      difficulty: "Beginner",     description: "Classic trailing or climbing vine with lobed leaves. Excellent in hanging baskets or trained up a trellis or moss pole." },
+      { common: "Euphorbia",            botanical: "Euphorbia trigona",            family: "Euphorbiaceae",   difficulty: "Intermediate", description: "Tall cactus-like succulent with distinctive ridged stems and small leaves. Makes a dramatic architectural statement in bright rooms." },
+      // F
+      { common: "Fiddle Leaf Fig",      botanical: "Ficus lyrata",                 family: "Moraceae",        difficulty: "Expert",       description: "The ultimate statement plant with enormous violin-shaped leaves. Stunning when healthy but demands consistent conditions and bright light." },
+      { common: "Ficus",                botanical: "Ficus benjamina",              family: "Moraceae",        difficulty: "Intermediate", description: "Elegant weeping tree with glossy, arching branches. Sensitive to being moved but stunning and long-lived once established." },
+      { common: "Fishbone Cactus",      botanical: "Epiphyllum anguliger",         family: "Cactaceae",       difficulty: "Beginner",     description: "Unusual epiphytic cactus with zigzag flat stems. Produces spectacular, intensely fragrant white flowers at night." },
+      { common: "Fittonia",             botanical: "Fittonia albivenis",           family: "Acanthaceae",     difficulty: "Beginner",     description: "Low-growing plant with intricate networks of white or pink veins on dark green leaves. Perfect for terrariums and humid spaces." },
+      { common: "Flamingo Flower",      botanical: "Anthurium scherzerianum",      family: "Araceae",         difficulty: "Intermediate", description: "Striking waxy spathes in vivid red, pink, or white with a curly orange spadix. Long-lasting, exotic, and surprisingly rewarding." },
+      { common: "Foxtail Fern",         botanical: "Asparagus meyeri",             family: "Asparagaceae",    difficulty: "Beginner",     description: "Dense plume-like fronds that look like a fox's tail. Drought-tolerant and much easier to care for than true ferns." },
+      { common: "Friendship Plant",     botanical: "Pilea involucrata",            family: "Urticaceae",      difficulty: "Beginner",     description: "Compact plant with beautifully textured, quilted leaves in bronze and green. Produces small offsets readily to share." },
+      // G
+      { common: "Gardenia",             botanical: "Gardenia jasminoides",         family: "Rubiaceae",       difficulty: "Expert",       description: "Intoxicatingly fragrant white flowers against glossy dark leaves. Breathtakingly beautiful but demands precise temperature and humidity." },
+      { common: "Ghost Plant",          botanical: "Graptopetalum paraguayense",   family: "Crassulaceae",    difficulty: "Beginner",     description: "Ethereal pale grey-pink rosettes on trailing stems. Extremely drought-tolerant and one of the easiest succulents to grow." },
+      { common: "Golden Pothos",        botanical: "Epipremnum aureum",            family: "Araceae",         difficulty: "Beginner",     description: "Perhaps the most forgiving houseplant — trails or climbs with heart-shaped leaves marbled in gold and green. Nearly indestructible." },
+      { common: "Grape Ivy",            botanical: "Cissus rhombifolia",           family: "Vitaceae",        difficulty: "Beginner",     description: "Vigorous climbing or trailing plant with attractive three-lobed leaves. Tolerates low light surprisingly well for a climber." },
+      { common: "Guzmania",             botanical: "Guzmania lingulata",           family: "Bromeliaceae",    difficulty: "Beginner",     description: "Dramatic bromeliad with a vivid red or orange central rosette that holds water. Long-lasting colour and an exotic presence." },
+      // H
+      { common: "Haworthia",            botanical: "Haworthia fasciata",           family: "Asphodelaceae",   difficulty: "Beginner",     description: "Compact rosette succulent with white-striped leaves. Tolerates lower light than most succulents — ideal for desks and shelves." },
+      { common: "Heart-Leaf Philodendron", botanical: "Philodendron hederaceum",   family: "Araceae",         difficulty: "Beginner",     description: "One of the easiest houseplants with glossy, heart-shaped leaves on trailing or climbing vines. Nearly impossible to kill." },
+      { common: "Hindu Rope Plant",     botanical: "Hoya carnosa compacta",        family: "Apocynaceae",     difficulty: "Intermediate", description: "Fascinating hanging plant with tightly curled, waxy leaves. Produces clusters of star-shaped, intensely fragrant flowers." },
+      { common: "Hoya",                 botanical: "Hoya carnosa",                 family: "Apocynaceae",     difficulty: "Beginner",     description: "Waxy, succulent-like leaves on trailing vines adorned with clusters of star-shaped, sweetly scented flowers. Very easy to grow." },
+      { common: "Hyacinth",             botanical: "Hyacinthus orientalis",        family: "Asparagaceae",    difficulty: "Beginner",     description: "Dense spikes of intensely fragrant flowers in purple, pink, white, or yellow. Perfect for forcing indoors in winter months." },
+      // I
+      { common: "Ice Plant",            botanical: "Delosperma cooperi",           family: "Aizoaceae",       difficulty: "Beginner",     description: "Drought-tolerant succulent with glistening jewel-like leaves and vivid daisy-like flowers. Loves full sun and sharp drainage." },
+      { common: "Inch Plant",           botanical: "Tradescantia zebrina",         family: "Commelinaceae",   difficulty: "Beginner",     description: "Fast-growing trailing plant with iridescent striped leaves in purple and silver. Roots instantly in water and grows vigorously." },
+      { common: "Iron Cross Begonia",   botanical: "Begonia masoniana",            family: "Begoniaceae",     difficulty: "Intermediate", description: "Textured, puckered leaves with a distinctive dark brown cross pattern. A unique and eye-catching foliage begonia." },
+      { common: "Ivy",                  botanical: "Hedera helix",                 family: "Araliaceae",      difficulty: "Beginner",     description: "Versatile climbing or trailing plant with classic lobed leaves. Incredibly adaptable, fast-growing, and available in many varieties." },
+      // J
+      { common: "Jade Plant",           botanical: "Crassula ovata",               family: "Crassulaceae",    difficulty: "Beginner",     description: "A long-lived succulent that develops a beautiful tree-like form over time. Symbolises good luck and is nearly indestructible." },
+      { common: "Japanese Peace Lily",  botanical: "Spathiphyllum wallisii",       family: "Araceae",         difficulty: "Beginner",     description: "Elegant white spathes rise above glossy green foliage. One of the very best plants for low-light spaces and air purification." },
+      { common: "Jasmine",              botanical: "Jasminum polyanthum",          family: "Oleaceae",        difficulty: "Intermediate", description: "Climbing vine with clusters of intensely fragrant white flowers. Perfect near a bright window during the cooler months." },
+      { common: "Jungle Velvet",        botanical: "Calathea warscewiczii",        family: "Marantaceae",     difficulty: "Expert",       description: "Exquisite velvety leaves with intricate patterns and vivid purple undersides. High humidity and consistent care are essential." },
+      // K
+      { common: "Kalanchoe",            botanical: "Kalanchoe blossfeldiana",      family: "Crassulaceae",    difficulty: "Beginner",     description: "Produces clusters of long-lasting blooms in red, orange, yellow, or pink. Easy care and reliably re-flowers with the right light." },
+      { common: "Kangaroo Paw Fern",    botanical: "Microsorum diversifolium",     family: "Polypodiaceae",   difficulty: "Beginner",     description: "Unusual fern with lobed, paw-shaped fronds on creeping rhizomes. More drought-tolerant than most ferns." },
+      { common: "Kentia Palm",          botanical: "Howea forsteriana",            family: "Arecaceae",       difficulty: "Beginner",     description: "The most elegant of indoor palms with graceful arching fronds. Incredibly tolerant of low light, shade, and neglect." },
+      { common: "Korean Rock Fern",     botanical: "Polystichum tsus-simense",     family: "Dryopteridaceae", difficulty: "Beginner",     description: "Compact fern with delicate, dark green fronds. More tolerant of dry air and lower light than most other ferns." },
+      // L
+      { common: "Lavender",             botanical: "Lavandula angustifolia",       family: "Lamiaceae",       difficulty: "Intermediate", description: "Fragrant silver-green foliage with iconic purple flower spikes. Needs a very sunny windowsill and excellent drainage to thrive indoors." },
+      { common: "Lemon Button Fern",    botanical: "Nephrolepis cordifolia",       family: "Lomariopsidaceae",difficulty: "Beginner",     description: "Compact fern with small button-like leaflets and a subtle lemony scent when touched. Great for terrariums and humid bathrooms." },
+      { common: "Lemon Tree",           botanical: "Citrus limon",                 family: "Rutaceae",        difficulty: "Intermediate", description: "Fragrant white flowers and glossy leaves make this as ornamental as it is useful. Needs maximum light indoors to fruit and flower." },
+      { common: "Lipstick Plant",       botanical: "Aeschynanthus radicans",       family: "Gesneriaceae",    difficulty: "Intermediate", description: "Trailing plant with glossy leaves and tubular red flowers that emerge from dark purple calyxes like lipstick from a tube." },
+      { common: "Lucky Bamboo",         botanical: "Dracaena sanderiana",          family: "Asparagaceae",    difficulty: "Beginner",     description: "Not a true bamboo — grows happily in water or soil. Traditionally associated with good fortune and positive energy." },
+      // M
+      { common: "Maidenhair Fern",      botanical: "Adiantum pedatum",             family: "Pteridaceae",     difficulty: "Expert",       description: "Ethereally beautiful with delicate fan-shaped leaflets on wiry black stems. Demands constant high humidity — a true commitment." },
+      { common: "Maranta",              botanical: "Maranta leuconeura",           family: "Marantaceae",     difficulty: "Intermediate", description: "Known as the prayer plant — leaves fold upward at night. Intricate herringbone patterns in green and red make it stunning." },
+      { common: "Miniature Rose",       botanical: "Rosa chinensis minima",        family: "Rosaceae",        difficulty: "Intermediate", description: "Full-sized rose beauty in a compact form. Needs bright light and good air circulation to thrive and stay disease-free indoors." },
+      { common: "Money Tree",           botanical: "Pachira aquatica",             family: "Malvaceae",       difficulty: "Beginner",     description: "Braided trunk and palmate leaves make this a stunning architectural plant. Traditionally believed to bring financial luck." },
+      { common: "Monstera",             botanical: "Monstera deliciosa",           family: "Araceae",         difficulty: "Beginner",     description: "The iconic split-leaf plant that defined a generation of interior design. Easy, fast-growing, and dramatically beautiful." },
+      { common: "Moses in a Cradle",    botanical: "Tradescantia spathacea",       family: "Commelinaceae",   difficulty: "Beginner",     description: "Striking plant with sword-shaped leaves — deep green on top and vivid purple underneath. Very easy and colourful." },
+      { common: "Moth Orchid",          botanical: "Phalaenopsis spp.",            family: "Orchidaceae",     difficulty: "Intermediate", description: "The most popular orchid for good reason — long-lasting blooms in every colour. Easier than its exotic appearance suggests." },
+      // N
+      { common: "Nerve Plant",          botanical: "Fittonia albivenis",           family: "Acanthaceae",     difficulty: "Beginner",     description: "Low-growing carpet of dark leaves traced with intricate networks of white or pink veins. Perfect for terrariums and bottle gardens." },
+      { common: "Neon Pothos",          botanical: "Epipremnum aureum 'Neon'",     family: "Araceae",         difficulty: "Beginner",     description: "The chartreuse-yellow variety of pothos that practically glows in low-light conditions. Extraordinarily easy to grow." },
+      { common: "Never-Never Plant",    botanical: "Ctenanthe setosa",             family: "Marantaceae",     difficulty: "Intermediate", description: "Bold patterned foliage in silvery green and deep green stripes. Needs humidity but makes a stunning, dramatic statement." },
+      { common: "Norfolk Island Pine",  botanical: "Araucaria heterophylla",       family: "Araucariaceae",   difficulty: "Beginner",     description: "Naturally symmetrical tree with tiered branches. Popular as a living Christmas tree and wonderfully architectural year-round." },
+      // O
+      { common: "Olive Tree",           botanical: "Olea europaea",                family: "Oleaceae",        difficulty: "Intermediate", description: "Silvery-grey leaves on gnarled, characterful stems. A Mediterranean classic that needs maximum light and free-draining soil indoors." },
+      { common: "Orchid",               botanical: "Phalaenopsis spp.",            family: "Orchidaceae",     difficulty: "Intermediate", description: "Elegant long-lasting blooms on arching stems. More forgiving than their exotic appearance suggests with the right care routine." },
+      { common: "Oxalis",               botanical: "Oxalis triangularis",          family: "Oxalidaceae",     difficulty: "Beginner",     description: "Deep purple clover-like leaves that fold up at night. Produces delicate pink flowers and spreads reliably from its bulblets." },
+      { common: "Oyster Plant",         botanical: "Tradescantia spathacea",       family: "Commelinaceae",   difficulty: "Beginner",     description: "Compact rosette with green and purple striped leaves. Architectural, colourful, and incredibly easy to grow." },
+      // P
+      { common: "Parlor Palm",          botanical: "Chamaedorea elegans",          family: "Arecaceae",       difficulty: "Beginner",     description: "Victorian favourite that has stood the test of time. Tolerates low light and dry conditions better than any other indoor palm." },
+      { common: "Peace Lily",           botanical: "Spathiphyllum wallisii",       family: "Araceae",         difficulty: "Beginner",     description: "One of the best low-light houseplants — droops dramatically when thirsty and bounces back quickly. Purifies the air beautifully." },
+      { common: "Peperomia",            botanical: "Peperomia obtusifolia",        family: "Piperaceae",      difficulty: "Beginner",     description: "A huge family of compact plants with fascinating leaf textures and colours. Stores water in its leaves for built-in drought tolerance." },
+      { common: "Philodendron",         botanical: "Philodendron bipinnatifidum",  family: "Araceae",         difficulty: "Beginner",     description: "Tropical classic with large deeply lobed leaves. Fast-growing, low-maintenance, and makes an instant dramatic impact." },
+      { common: "Pink Princess Philodendron", botanical: "Philodendron erubescens",family: "Araceae",         difficulty: "Intermediate", description: "Highly sought-after for its dramatic pink and dark green variegated leaves. Each leaf reveals a uniquely different pattern." },
+      { common: "Pitcher Plant",        botanical: "Nepenthes spp.",               family: "Nepenthaceae",    difficulty: "Expert",       description: "Extraordinary carnivorous plant with hanging pitcher-shaped traps for catching insects. Demands very high humidity and pure water." },
+      { common: "Polka Dot Plant",      botanical: "Hypoestes phyllostachya",      family: "Acanthaceae",     difficulty: "Beginner",     description: "Cheerful foliage splashed with pink, red, or white spots on green. Bright and fun — needs good light to stay vibrant." },
+      { common: "Ponytail Palm",        botanical: "Beaucarnea recurvata",         family: "Asparagaceae",    difficulty: "Beginner",     description: "Swollen trunk stores water, topped with a cascading fountain of long grass-like leaves. Almost impossible to overwater." },
+      { common: "Pothos",               botanical: "Epipremnum aureum",            family: "Araceae",         difficulty: "Beginner",     description: "The ultimate beginner plant — trails, climbs, tolerates low light and irregular watering. A genuinely indestructible classic." },
+      { common: "Prayer Plant",         botanical: "Maranta leuconeura",           family: "Marantaceae",     difficulty: "Intermediate", description: "Beautifully patterned leaves fold upward like praying hands at night. A gentle daily reminder of nature's quiet rhythms." },
+      { common: "Purple Heart",         botanical: "Tradescantia pallida",         family: "Commelinaceae",   difficulty: "Beginner",     description: "Intensely purple leaves and stems with small pink flowers. Thrives in full sun and is wonderfully drought-tolerant once established." },
+      // Q
+      { common: "Queen of Hearts",      botanical: "Homalomena rubescens",         family: "Araceae",         difficulty: "Beginner",     description: "A close relative of the peace lily with glossy heart-shaped leaves. Tolerates low light and adapts well to indoor environments." },
+      { common: "Queen's Tears",        botanical: "Billbergia nutans",            family: "Bromeliaceae",    difficulty: "Beginner",     description: "An easy-going bromeliad that produces pendulous pink and green flowers. Very forgiving and multiplies freely over time." },
+      { common: "Queensland Umbrella Tree", botanical: "Schefflera actinophylla",  family: "Araliaceae",      difficulty: "Beginner",     description: "Large umbrella-shaped leaves radiate from central stems. Can reach ceiling height and makes a genuinely dramatic statement." },
+      // R
+      { common: "Rattlesnake Plant",    botanical: "Calathea lancifolia",          family: "Marantaceae",     difficulty: "Intermediate", description: "Long wavy leaves with dark green spots on a lime-green background and vivid purple undersides. Striking and exotic-looking." },
+      { common: "Rex Begonia",          botanical: "Begonia rex",                  family: "Begoniaceae",     difficulty: "Intermediate", description: "Spectacular foliage in swirling patterns of silver, purple, pink, and green. Among the most ornate of all houseplants." },
+      { common: "Ripple Peperomia",     botanical: "Peperomia caperata",           family: "Piperaceae",      difficulty: "Beginner",     description: "Deeply corrugated heart-shaped leaves in dark green. Compact and perfect for small spaces, shelves, or terrariums." },
+      { common: "Rosemary",             botanical: "Salvia rosmarinus",            family: "Lamiaceae",       difficulty: "Intermediate", description: "Fragrant Mediterranean herb with needle-like leaves and blue flowers. Needs a very sunny position and excellent drainage indoors." },
+      { common: "Rubber Plant",         botanical: "Ficus elastica",               family: "Moraceae",        difficulty: "Beginner",     description: "Bold architectural plant with large, glossy leaves in deep green or burgundy. Fast-growing, easy to maintain, and long-lived." },
+      // S
+      { common: "Sago Palm",            botanical: "Cycas revoluta",               family: "Cycadaceae",      difficulty: "Intermediate", description: "Ancient-looking architectural plant with stiff feathery fronds. Extremely slow-growing but exceptionally long-lived and elegant." },
+      { common: "Silver Pothos",        botanical: "Scindapsus pictus",            family: "Araceae",         difficulty: "Beginner",     description: "Velvety heart-shaped leaves splashed with silvery markings. Similar care to regular pothos but even more visually striking." },
+      { common: "Snake Plant",          botanical: "Dracaena trifasciata",         family: "Asparagaceae",    difficulty: "Beginner",     description: "Upright sword-like leaves with yellow edges. Tolerates drought, low light, and almost complete neglect — perfect for beginners." },
+      { common: "Spider Plant",         botanical: "Chlorophytum comosum",         family: "Asparagaceae",    difficulty: "Beginner",     description: "Cascading rosettes of variegated leaves with baby plantlets dangling on long stolons. A classic and wonderfully easy plant." },
+      { common: "String of Pearls",     botanical: "Senecio rowleyanus",           family: "Asteraceae",      difficulty: "Intermediate", description: "Cascading chains of perfect spherical leaves that look like green beads. Stunning displayed on a high shelf or in a hanging basket." },
+      { common: "Swiss Cheese Plant",   botanical: "Monstera adansonii",           family: "Araceae",         difficulty: "Beginner",     description: "Smaller and more delicate than Monstera deliciosa with distinctive hole-perforated leaves. A fast-growing charming climber." },
+      // T
+      { common: "Thanksgiving Cactus",  botanical: "Schlumbergera truncata",       family: "Cactaceae",       difficulty: "Beginner",     description: "Produces masses of tubular flowers in autumn. Very easy to care for and reliably blooms at the same time each year." },
+      { common: "Ti Plant",             botanical: "Cordyline fruticosa",          family: "Asparagaceae",    difficulty: "Beginner",     description: "Sword-shaped leaves in vivid combinations of red, pink, green, and purple. Makes a bold and colourful tropical statement." },
+      { common: "Tillandsia",           botanical: "Tillandsia spp.",              family: "Bromeliaceae",    difficulty: "Beginner",     description: "Soil-free air plants that live on air, water, and light. Incredibly diverse and perfect for creative mounted displays." },
+      { common: "Tradescantia",         botanical: "Tradescantia zebrina",         family: "Commelinaceae",   difficulty: "Beginner",     description: "Fast-growing trailing plant with iridescent striped leaves in silver, green, and purple. One of the easiest plants to propagate." },
+      { common: "Tree Philodendron",    botanical: "Thaumatophyllum bipinnatifidum",family: "Araceae",        difficulty: "Beginner",     description: "Dramatic deeply lobed leaves on long stems. Grows into an impressive specimen plant with minimal care needed." },
+      // U
+      { common: "Umbrella Plant",       botanical: "Cyperus alternifolius",        family: "Cyperaceae",      difficulty: "Beginner",     description: "Unique grass-like plant with umbrella-shaped leaf clusters. One of the few houseplants that actively thrives in waterlogged soil." },
+      { common: "Umbrella Tree",        botanical: "Schefflera actinophylla",      family: "Araliaceae",      difficulty: "Beginner",     description: "Glossy palmate leaves radiate like umbrella spokes from central stems. Fast-growing and very easy to care for indoors." },
+      { common: "Upright Elephant Ear", botanical: "Alocasia odora",               family: "Araceae",         difficulty: "Intermediate", description: "Enormous upward-facing leaves on stout stems. A dramatic architectural plant that loves warmth, humidity, and bright light." },
+      { common: "Urn Plant",            botanical: "Aechmea fasciata",             family: "Bromeliaceae",    difficulty: "Intermediate", description: "Striking bromeliad with silver-banded leaves and a spectacular pink torch-like flower head. Holds water in its central urn." },
+      // V
+      { common: "Variegated Monstera",  botanical: "Monstera deliciosa 'Albo'",   family: "Araceae",         difficulty: "Expert",       description: "The most coveted houseplant — each leaf is uniquely splashed with creamy white. Slow-growing and truly one-of-a-kind." },
+      { common: "Velvet Plant",         botanical: "Gynura aurantiaca",            family: "Asteraceae",      difficulty: "Beginner",     description: "Velvety, deeply coloured purple leaves that shimmer in the light. Needs bright light to maintain its rich, jewel-like colour." },
+      { common: "Venus Flytrap",        botanical: "Dionaea muscipula",            family: "Droseraceae",     difficulty: "Expert",       description: "The most famous carnivorous plant with snap-trap leaves. Needs pure water, very high light, and nutrient-poor conditions." },
+      { common: "Vriesea",              botanical: "Vriesea splendens",            family: "Bromeliaceae",    difficulty: "Intermediate", description: "Elegant bromeliad with dark-banded leaves and a vivid red flattened flower spike. Holds water in its central cup." },
+      // W
+      { common: "Wandering Dude",       botanical: "Tradescantia zebrina",         family: "Commelinaceae",   difficulty: "Beginner",     description: "Trailing stems with iridescent leaves in silver and deep purple-green. Roots in water instantly and grows with great vigour." },
+      { common: "Watermelon Peperomia", botanical: "Peperomia argyreia",           family: "Piperaceae",      difficulty: "Beginner",     description: "Rounded leaves with silver and green stripes resembling a watermelon rind. Compact, charming, and perfect for any space." },
+      { common: "Wax Plant",            botanical: "Hoya carnosa",                 family: "Apocynaceae",     difficulty: "Beginner",     description: "Trailing vines with thick waxy leaves and clusters of star-shaped flowers with an intense, sweet fragrance. Very easy to grow." },
+      { common: "Weeping Fig",          botanical: "Ficus benjamina",              family: "Moraceae",        difficulty: "Intermediate", description: "Graceful tree-form plant with glossy arching branches. Sensitive to being moved but beautiful and architectural once settled." },
+      { common: "White Bird of Paradise", botanical: "Strelitzia nicolai",         family: "Strelitziaceae",  difficulty: "Intermediate", description: "A true floor-to-ceiling statement plant with enormous paddle leaves that split naturally at the edges with age." },
+      // X
+      { common: "Xanadu Philodendron",  botanical: "Thaumatophyllum xanadu",       family: "Araceae",         difficulty: "Beginner",     description: "Compact clumping philodendron with deeply lobed, lustrous leaves. Stays tidy and grows slowly — ideal for smaller spaces." },
+      { common: "Xerographica Air Plant",botanical: "Tillandsia xerographica",     family: "Bromeliaceae",    difficulty: "Beginner",     description: "The king of air plants — large silvery rosette with curling leaves. Extremely drought-tolerant and wonderfully architectural." },
+      { common: "Xanthosoma",           botanical: "Xanthosoma sagittifolium",     family: "Araceae",         difficulty: "Intermediate", description: "Large arrow-shaped leaves with prominent veining. Closely related to taro and makes a dramatic tropical indoor statement." },
+      // Y
+      { common: "Yellow Palm",          botanical: "Dypsis lutescens",             family: "Arecaceae",       difficulty: "Beginner",     description: "Feathery arching fronds from golden-yellow stems. One of the most popular indoor palms and a top-rated air purifier." },
+      { common: "Yesterday-Today-Tomorrow", botanical: "Brunfelsia pauciflora",    family: "Solanaceae",      difficulty: "Intermediate", description: "Flowers open purple, fade to lavender, then white — all three colours present simultaneously on the same plant. Truly magical." },
+      { common: "Yucca",                botanical: "Yucca elephantipes",           family: "Asparagaceae",    difficulty: "Beginner",     description: "Bold architectural plant with sword-shaped leaves on a thick sculptural trunk. Virtually drought-proof and wonderfully structural." },
+      // Z
+      { common: "Zebra Cactus",         botanical: "Haworthia fasciata",           family: "Asphodelaceae",   difficulty: "Beginner",     description: "Compact rosette with distinctive horizontal white stripes. Tolerates lower light than most succulents — a perfect desk plant." },
+      { common: "Zebra Plant",          botanical: "Aphelandra squarrosa",         family: "Acanthaceae",     difficulty: "Expert",       description: "Stunning white-veined dark leaves and bright yellow flower bracts. Beautiful but demands high humidity and very consistent care." },
+      { common: "ZZ Plant",             botanical: "Zamioculcas zamiifolia",       family: "Araceae",         difficulty: "Beginner",     description: "Glossy dark green leaves on arching stems from thick underground rhizomes. Tolerates almost complete neglect and very low light." },
+    ];
+
+    /* ─── State ─────────────────────────────────────────── */
+    let activeLetter = 'all';
+    let activeFilter = 'All';
+    let searchQuery  = '';
+
+    /* ─── Build alphabet nav ────────────────────────────── */
+    const letters = [...new Set(plants.map(p => p.common[0].toUpperCase()))].sort();
+    const alphaNav = document.getElementById('alpha-nav');
+    letters.forEach(l => {
+      const btn = document.createElement('button');
+      btn.className = 'alpha-btn';
+      btn.dataset.letter = l;
+      btn.textContent = l;
+      alphaNav.appendChild(btn);
+    });
+
+    alphaNav.addEventListener('click', e => {
+      const btn = e.target.closest('.alpha-btn');
+      if (!btn) return;
+      activeLetter = btn.dataset.letter;
+      alphaNav.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      clearSearch();
+      render();
+    });
+
+    /* ─── Difficulty filter ─────────────────────────────── */
+    document.getElementById('filter-pills').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-pill');
+      if (!btn) return;
+      activeFilter = btn.dataset.filter;
+      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    });
+
+    /* ─── Search ────────────────────────────────────────── */
+    const searchInput  = document.getElementById('search-input');
+    const searchClear  = document.getElementById('search-clear');
+    const spellSuggest = document.getElementById('spell-suggest');
+    const suggestBtn   = document.getElementById('suggest-btn');
+
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value.trim();
+      searchClear.classList.toggle('visible', searchQuery.length > 0);
+      if (searchQuery) {
+        activeLetter = 'all';
+        alphaNav.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+        alphaNav.querySelector('.all-btn').classList.add('active');
+      }
+      render();
+    });
+
+    searchClear.addEventListener('click', () => { clearSearch(); render(); });
+
+    function clearSearch() {
+      searchInput.value = '';
+      searchQuery = '';
+      searchClear.classList.remove('visible');
+      spellSuggest.classList.remove('visible');
+    }
+
+    /* ─── Fuzzy spell-check (Levenshtein) ───────────────── */
+    function levenshtein(a, b) {
+      const m = a.length, n = b.length;
+      const dp = Array.from({ length: m + 1 }, (_, i) =>
+        Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0));
+      for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+          dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+      return dp[m][n];
+    }
+
+    function findClosest(query) {
+      const q = query.toLowerCase();
+      let best = null, bestDist = Infinity;
+      for (const p of plants) {
+        const d = levenshtein(q, p.common.toLowerCase());
+        if (d < bestDist) { bestDist = d; best = p; }
+      }
+      return bestDist <= 4 ? best : null;
+    }
+
+    /* ─── Filter logic ──────────────────────────────────── */
+    function getFiltered() {
+      let results = [...plants];
+      if (activeLetter !== 'all')
+        results = results.filter(p => p.common[0].toUpperCase() === activeLetter);
+      if (searchQuery)
+        results = results.filter(p =>
+          p.common.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.botanical.toLowerCase().includes(searchQuery.toLowerCase()));
+      if (activeFilter !== 'All')
+        results = results.filter(p => p.difficulty === activeFilter);
+      return results;
+    }
+
+    /* ─── Render ────────────────────────────────────────── */
+    const grid      = document.getElementById('plant-grid');
+    const noResults = document.getElementById('no-results');
+    const countEl   = document.getElementById('results-count');
+
+    function render() {
+      const results = getFiltered();
+      spellSuggest.classList.remove('visible');
+
+      if (results.length === 0) {
+        grid.innerHTML = '';
+        noResults.classList.add('visible');
+
+        if (searchQuery) {
+          const closest = findClosest(searchQuery);
+          if (closest) {
+            suggestBtn.textContent = closest.common;
+            spellSuggest.classList.add('visible');
+          }
+        }
+        countEl.textContent = '0 plants';
+        return;
+      }
+
+      noResults.classList.remove('visible');
+      countEl.textContent = `${results.length} plant${results.length !== 1 ? 's' : ''}`;
+
+      grid.innerHTML = results.map(p => `
+        <div class="plant-card">
+          <div class="plant-card-top">
+            <p class="plant-common">${p.common}</p>
+            <span class="difficulty-badge ${p.difficulty}">${p.difficulty}</span>
+          </div>
+          <p class="plant-botanical">${p.botanical}</p>
+          <p class="plant-family">${p.family}</p>
+          <p class="plant-desc">${p.description}</p>
+        </div>`).join('');
+    }
+
+    /* ─── Spell suggestion click ────────────────────────── */
+    suggestBtn.addEventListener('click', () => {
+      searchInput.value = suggestBtn.textContent;
+      searchQuery = suggestBtn.textContent;
+      searchClear.classList.add('visible');
+      spellSuggest.classList.remove('visible');
+      render();
+    });
+
+    /* ─── Init ──────────────────────────────────────────── */
+    render();
+  </script>
+</body>
+</html>

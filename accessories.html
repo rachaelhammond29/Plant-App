@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plant Accessories — Vinge Studios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,200;0,8..60,300;0,8..60,400;1,8..60,200;1,8..60,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #f5ede0; --beige: #e8dece; --beige-mid: #d8ccb8;
+      --gray-green: #6b7d68; --forest: #2d4a30; --forest-dark: #1e3320;
+      --maroon: #7a2e30; --charcoal: #1c1c1c;
+      --clay: #6b3a2a; --clay-dark: #4a2218; --clay-light: #c48055;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Source Serif 4', Georgia, serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); font-weight: 300; color: var(--charcoal); background: var(--cream); overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+
+    /* Nav */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0.5rem 2rem; display: flex; align-items: center; gap: 1.2rem; background: rgba(245,237,224,0.96); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(0,0,0,0.06); transition: padding 0.4s var(--ease-out); }
+    .nav.scrolled { padding: 0.3rem 2rem; }
+    .nav-logo { height: 160px; width: auto; transition: height 0.45s var(--ease-out); }
+    .nav.scrolled .nav-logo { height: 80px; }
+    .hamburger { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; padding: 0; background: none; border: none; cursor: pointer; z-index: 102; }
+    .hamburger span { display: block; width: 24px; height: 1.5px; border-radius: 2px; background: var(--forest-dark); transition: transform 0.35s var(--ease-out), opacity 0.25s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* Sidebar */
+    .sidebar-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(30,51,32,0.45); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity 0.35s var(--ease-out); }
+    .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: min(360px, 88vw); z-index: 201; background: var(--cream); transform: translateX(-100%); transition: transform 0.42s var(--ease-out); display: flex; flex-direction: column; box-shadow: 12px 0 60px rgba(0,0,0,0.18); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-top { padding: 1.6rem 1.8rem 1.4rem; border-bottom: 1px solid var(--beige-mid); display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-logo { height: 64px; width: auto; }
+    .sidebar-close { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid var(--beige-mid); border-radius: 50%; cursor: pointer; color: var(--gray-green); transition: border-color 0.2s, color 0.2s, transform 0.3s var(--ease-out); }
+    .sidebar-close:hover { border-color: var(--maroon); color: var(--maroon); transform: rotate(90deg); }
+    .sidebar-eyebrow { padding: 1.8rem 1.8rem 0.6rem; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-green); }
+    .sidebar-nav { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+    .sidebar-item { display: flex; align-items: center; gap: 1.2rem; padding: 1.25rem 1.8rem; color: inherit; border-left: 2px solid transparent; transition: background 0.2s, border-color 0.2s; }
+    .sidebar-item:hover { background: var(--beige); border-left-color: var(--maroon); }
+    .sidebar-icon { width: 46px; height: 46px; flex-shrink: 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--beige); border: 1px solid var(--beige-mid); color: var(--forest); transition: background 0.2s, color 0.2s; }
+    .sidebar-item:hover .sidebar-icon { background: var(--forest); color: var(--cream); }
+    .sidebar-item-name { font-family: var(--font-display); font-size: 1.4rem; font-weight: 300; color: var(--forest-dark); line-height: 1.1; margin-bottom: 0.2rem; }
+    .sidebar-item-desc { font-size: 0.76rem; font-weight: 200; color: var(--gray-green); }
+    .sidebar-footer { padding: 1.2rem 1.8rem 1.8rem; border-top: 1px solid var(--beige-mid); font-size: 0.68rem; color: rgba(107,125,104,0.5); letter-spacing: 0.05em; }
+
+    /* Page header */
+    .page-header { padding: max(210px, 9rem) 0 4.5rem; text-align: center; background: linear-gradient(160deg, #6b3a2a 0%, #3a1a10 100%); position: relative; overflow: hidden; }
+    .page-header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 50% 60%, rgba(180,100,60,0.2) 0%, rgba(80,30,15,0.5) 50%, transparent 80%); }
+    .page-header-inner { position: relative; z-index: 1; }
+    .page-eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(240,190,150,0.8); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+    .page-eyebrow::before, .page-eyebrow::after { content: ''; display: inline-block; width: 24px; height: 1px; background: rgba(240,190,150,0.5); }
+    .page-title { font-family: var(--font-display); font-weight: 300; font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1.1; color: var(--cream); margin-bottom: 1rem; }
+    .page-title em { font-style: italic; color: rgba(240,190,150,0.9); }
+    .page-sub { font-size: 0.95rem; font-weight: 200; line-height: 1.8; color: rgba(245,237,224,0.6); max-width: 48ch; margin: 0 auto; }
+
+    /* Main */
+    .main { padding: 3.5rem 0 7rem; }
+    .container { width: min(1100px, 100% - 3rem); margin-inline: auto; }
+
+    /* Browse heading */
+    .browse-heading { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; color: var(--forest-dark); margin-bottom: 0.3rem; }
+    .browse-sub { font-size: 0.85rem; font-weight: 200; color: var(--gray-green); margin-bottom: 2rem; }
+
+    /* Category grid */
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.25rem; }
+    .cat-card { border: none; background: none; cursor: pointer; text-align: left; border-radius: 14px; overflow: hidden; transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out); }
+    .cat-card:hover { transform: translateY(-5px); box-shadow: 0 16px 44px rgba(0,0,0,0.13); }
+    .cat-icon-area { aspect-ratio: 5/3; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .cat-icon-area svg { width: 56px; height: 56px; }
+    .cat-body { padding: 1rem 1.2rem 1.25rem; background: #fff; border: 1px solid var(--beige-mid); border-top: none; border-radius: 0 0 14px 14px; }
+    .cat-name { font-family: var(--font-display); font-size: 1.3rem; font-weight: 400; color: var(--forest-dark); margin-bottom: 0.2rem; }
+    .cat-desc { font-size: 0.76rem; font-weight: 200; color: var(--gray-green); line-height: 1.5; }
+
+    /* Product view */
+    #product-view { display: none; }
+    .product-header { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--beige-mid); }
+    .back-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1.1rem; background: var(--beige); border: 1px solid var(--beige-mid); border-radius: 100px; cursor: pointer; font-family: var(--font-body); font-size: 0.8rem; font-weight: 300; color: var(--forest-dark); transition: background 0.18s; margin-top: 0.2rem; }
+    .back-btn:hover { background: var(--beige-mid); }
+    .product-breadcrumb { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-green); margin-bottom: 0.25rem; }
+    .product-cat-title { font-family: var(--font-display); font-size: 2rem; font-weight: 300; color: var(--forest-dark); line-height: 1.1; }
+    .product-cat-count { font-size: 0.78rem; font-weight: 200; color: var(--gray-green); margin-top: 0.15rem; }
+
+    /* Product grid */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.25rem; }
+    .prod-card { background: #fff; border: 1px solid var(--beige-mid); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.2s var(--ease-out); }
+    .prod-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.09); transform: translateY(-2px); }
+    .prod-color-bar { height: 4px; }
+    .prod-body { padding: 1.2rem 1.4rem 1.4rem; flex: 1; display: flex; flex-direction: column; gap: 0.55rem; }
+    .prod-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+    .prod-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 400; color: var(--forest-dark); line-height: 1.2; }
+    .prod-price { flex-shrink: 0; font-size: 0.7rem; font-weight: 400; color: var(--gray-green); background: var(--beige); padding: 0.18rem 0.5rem; border-radius: 100px; border: 1px solid var(--beige-mid); white-space: nowrap; margin-top: 0.1rem; }
+    .prod-tagline { font-size: 0.82rem; font-style: italic; font-weight: 200; color: var(--gray-green); }
+    .prod-best-for { display: flex; flex-wrap: wrap; gap: 0.28rem; align-items: center; }
+    .prod-best-label { font-size: 0.63rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-green); margin-right: 0.15rem; flex-shrink: 0; }
+    .prod-plant-tag { font-size: 0.67rem; font-weight: 300; background: rgba(45,74,48,0.07); color: var(--forest); border: 1px solid rgba(45,74,48,0.16); border-radius: 100px; padding: 0.12rem 0.48rem; }
+    .prod-desc { font-size: 0.83rem; font-weight: 200; line-height: 1.72; color: rgba(28,28,28,0.72); flex: 1; }
+    .prod-footer { display: flex; justify-content: flex-end; padding-top: 0.6rem; border-top: 1px solid var(--beige-mid); margin-top: 0.2rem; }
+    .shop-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.78rem; font-weight: 300; cursor: pointer; background: var(--forest-dark); color: var(--cream); border: none; transition: opacity 0.18s, transform 0.18s var(--ease-out); }
+    .shop-btn:hover { opacity: 0.85; transform: translateX(3px); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .category-grid { animation: fadeUp 0.38s var(--ease-out) both; }
+    .product-grid { animation: fadeUp 0.38s var(--ease-out) both; }
+
+    @media (max-width: 640px) {
+      .category-grid { grid-template-columns: repeat(2, 1fr); }
+      .product-grid { grid-template-columns: 1fr; }
+      .product-header { flex-direction: column; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="sidebar-logo" />
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close menu">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
+      </button>
+    </div>
+    <p class="sidebar-eyebrow">Explore the Studio</p>
+    <nav class="sidebar-nav">
+      <a href="discover.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="14" height="18" rx="2"/><path d="M8 7h6M8 11h6M8 15h4"/></svg></div>
+        <div><p class="sidebar-item-name">Discover</p><p class="sidebar-item-desc">Identify any plant instantly</p></div>
+      </a>
+      <a href="health.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19.5S3 13.5 3 8a5 5 0 0 1 8-4A5 5 0 0 1 19 8c0 5.5-8 11.5-8 11.5z"/></svg></div>
+        <div><p class="sidebar-item-name">Health</p><p class="sidebar-item-desc">Diagnose & revive your plants</p></div>
+      </a>
+      <a href="build.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-4"/><path d="M17.5 2.5l2 2-7 7H10v-2l7.5-7z"/></svg></div>
+        <div><p class="sidebar-item-name">Build</p><p class="sidebar-item-desc">Design your perfect space</p></div>
+      </a>
+      <a href="prune.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="16" r="2.5"/><path d="M8.5 7.5L17 17M8.5 14.5L17 5"/></svg></div>
+        <div><p class="sidebar-item-name">Prune</p><p class="sidebar-item-desc">Find exactly where to cut</p></div>
+      </a>
+      <a href="dictionary.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <div><p class="sidebar-item-name">Dictionary</p><p class="sidebar-item-desc">Browse 180+ plant profiles</p></div>
+      </a>
+      <a href="accessories.html" class="sidebar-item">
+        <div class="sidebar-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <div><p class="sidebar-item-name">Accessories</p><p class="sidebar-item-desc">Shop pots, lights, tools & more</p></div>
+      </a>
+    </nav>
+    <div class="sidebar-footer">© 2026 Vinge Studios — Botanical Living</div>
+  </aside>
+
+  <nav class="nav" id="nav">
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <a href="index.html"><img src="brand_assets/Rachael Logo-2.png" alt="Vinge Studios" class="nav-logo" /></a>
+  </nav>
+
+  <header class="page-header">
+    <div class="page-header-inner">
+      <p class="page-eyebrow">Plant Shopping Guide</p>
+      <h1 class="page-title">Plant <em>accessories</em></h1>
+      <p class="page-sub">Browse curated categories of pots, tools, soil, lighting, and more — with direct links to shop the best options for your plants.</p>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <div id="category-view">
+        <h2 class="browse-heading">Browse by category</h2>
+        <p class="browse-sub">Select a category to explore curated products and what plants they suit best.</p>
+        <div class="category-grid" id="category-grid"></div>
+      </div>
+
+      <div id="product-view">
+        <div class="product-header">
+          <button class="back-btn" id="back-btn">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L2 6.5l6 5.5"/></svg>
+            All categories
+          </button>
+          <div>
+            <p class="product-breadcrumb" id="product-breadcrumb"></p>
+            <h2 class="product-cat-title" id="product-cat-title"></h2>
+            <p class="product-cat-count" id="product-cat-count"></p>
+          </div>
+        </div>
+        <div class="product-grid" id="product-grid"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const openSidebar  = () => { sidebar.classList.add('open'); overlay.classList.add('open'); hamburgerBtn.classList.add('open'); document.body.style.overflow = 'hidden'; };
+    const closeSidebar = () => { sidebar.classList.remove('open'); overlay.classList.remove('open'); hamburgerBtn.classList.remove('open'); document.body.style.overflow = ''; };
+    hamburgerBtn.addEventListener('click', openSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    /* ── Categories ─────────────────────────────────────────── */
+    const CATEGORIES = [
+      {
+        id: 'pots', name: 'Pots', color: '#8B4513',
+        bg: 'linear-gradient(135deg,#8B4513 0%,#5C2D0A 100%)',
+        desc: 'Terracotta, ceramic, self-watering & more',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(240,200,160,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 26 L20 44 H36 L40 26 Z"/>
+          <rect x="13" y="19" width="30" height="9" rx="3"/>
+          <ellipse cx="28" cy="23" rx="14" ry="5" fill="rgba(90,50,18,0.45)"/>
+          <line x1="28" y1="22" x2="28" y2="8"/>
+          <path d="M28 16 C21 13 17 8 15 5 C20 6 25 11 28 16"/>
+          <path d="M28 11 C35 8 39 3 41 0 C36 2 31 7 28 11"/>
+        </svg>`
+      },
+      {
+        id: 'stands', name: 'Stands & Display', color: '#6B4226',
+        bg: 'linear-gradient(135deg,#6B4226 0%,#45280F 100%)',
+        desc: 'Floor stands, shelves & macramé hangers',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(240,205,165,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="10" width="40" height="5" rx="2"/>
+          <rect x="12" y="26" width="32" height="5" rx="2"/>
+          <rect x="16" y="42" width="24" height="4" rx="2"/>
+          <line x1="13" y1="15" x2="10" y2="26"/>
+          <line x1="43" y1="15" x2="46" y2="26"/>
+          <line x1="17" y1="31" x2="15" y2="42"/>
+          <line x1="39" y1="31" x2="41" y2="42"/>
+        </svg>`
+      },
+      {
+        id: 'soil', name: 'Soil & Growing Media', color: '#5C4A1E',
+        bg: 'linear-gradient(135deg,#5C4A1E 0%,#3A2D0C 100%)',
+        desc: 'Potting mixes, perlite, coco coir & bark',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(235,195,140,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 44 Q13 30 28 28 Q43 30 46 44"/>
+          <line x1="10" y1="44" x2="46" y2="44"/>
+          <line x1="28" y1="28" x2="28" y2="14"/>
+          <path d="M28 22 C22 18 16 17 13 13 C18 13 24 17 28 22"/>
+          <path d="M28 17 C34 13 40 12 43 8 C38 9 32 13 28 17"/>
+        </svg>`
+      },
+      {
+        id: 'fert', name: 'Fertiliser & Feed', color: '#2A4E18',
+        bg: 'linear-gradient(135deg,#2A4E18 0%,#1A3009 100%)',
+        desc: 'Liquid, slow-release, organic & specialist',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(190,235,160,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M28 6 C21 14 13 22 13 32 C13 40.8 19.9 48 28 48 C36.1 48 43 40.8 43 32 C43 22 35 14 28 6Z"/>
+          <line x1="28" y1="6" x2="28" y2="32"/>
+          <path d="M21 26 C23 23 25.5 23 28 26"/>
+          <path d="M28 26 C30.5 23 33 23 35 26"/>
+        </svg>`
+      },
+      {
+        id: 'tools', name: 'Tools & Care', color: '#3A4052',
+        bg: 'linear-gradient(135deg,#3A4052 0%,#1E2235 100%)',
+        desc: 'Shears, watering cans, meters & misters',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(180,195,225,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="14" cy="14" r="5"/>
+          <circle cx="14" cy="28" r="5"/>
+          <line x1="19" y1="16" x2="46" y2="46"/>
+          <line x1="19" y1="26" x2="46" y2="10"/>
+          <line x1="19" y1="16" x2="19" y2="26"/>
+        </svg>`
+      },
+      {
+        id: 'lights', name: 'Grow Lights', color: '#8A6518',
+        bg: 'linear-gradient(135deg,#8A6518 0%,#5C420A 100%)',
+        desc: 'Full-spectrum LED panels, clips & strips',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(255,220,110,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="28" cy="22" r="9"/>
+          <line x1="28" y1="4" x2="28" y2="9"/>
+          <line x1="28" y1="35" x2="28" y2="40"/>
+          <line x1="10" y1="22" x2="15" y2="22"/>
+          <line x1="41" y1="22" x2="46" y2="22"/>
+          <line x1="14.6" y1="8.6" x2="18.2" y2="12.2"/>
+          <line x1="37.8" y1="31.8" x2="41.4" y2="35.4"/>
+          <line x1="41.4" y1="8.6" x2="37.8" y2="12.2"/>
+          <line x1="18.2" y1="31.8" x2="14.6" y2="35.4"/>
+          <path d="M23 37 L33 37 L31 47 L25 47 Z"/>
+          <line x1="25" y1="47" x2="31" y2="47"/>
+        </svg>`
+      },
+      {
+        id: 'support', name: 'Support & Training', color: '#3A5228',
+        bg: 'linear-gradient(135deg,#3A5228 0%,#243514 100%)',
+        desc: 'Moss poles, stakes, ties & trellises',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(175,225,135,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="28" y1="4" x2="28" y2="50"/>
+          <path d="M28 22 C19 17 14 10 13 5"/>
+          <path d="M28 32 C37 27 42 20 43 15"/>
+          <path d="M28 42 C19 37 14 30 13 25"/>
+          <ellipse cx="28" cy="50" rx="10" ry="4"/>
+        </svg>`
+      },
+      {
+        id: 'humidity', name: 'Humidity & Watering', color: '#1A4A4A',
+        bg: 'linear-gradient(135deg,#1A4A4A 0%,#0D2E2E 100%)',
+        desc: 'Pebble trays, humidifiers & watering globes',
+        icon: `<svg viewBox="0 0 56 56" fill="none" stroke="rgba(130,215,220,0.9)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M28 6 C28 6 13 24 13 36 C13 44.8 19.9 52 28 52 C36.1 52 43 44.8 43 36 C43 24 28 6 28 6Z"/>
+          <path d="M21 40 C22.5 43.5 25.5 46 28 46"/>
+        </svg>`
+      },
+    ];
+
+    /* ── Products ────────────────────────────────────────────── */
+    const PRODUCTS = {
+      pots: [
+        { name:"Terracotta Pot", tagline:"Classic breathable fired-clay pot", bestFor:["Succulents","Cacti","Herbs","Aloe","Lavender"], description:"Porous terracotta wicks excess moisture away from roots — the gold standard for plants that hate wet feet. The clay also buffers temperature swings, keeping roots cool in summer.", priceRange:"$5–$30", searchTerm:"terracotta clay pots indoor houseplants" },
+        { name:"Glazed Ceramic Pot", tagline:"Stylish and moisture-retentive", bestFor:["Ferns","Calathea","Peace Lily","Orchids","Tropical Plants"], description:"The glazed surface seals moisture in, making it ideal for plants that like consistently damp soil. Available in endless colours and sizes — a beautiful way to make a design statement.", priceRange:"$15–$60", searchTerm:"glazed ceramic plant pot decorative indoor" },
+        { name:"Self-Watering Planter", tagline:"Built-in reservoir for consistent moisture", bestFor:["Herbs","Ferns","Pothos","String of Hearts","Vegetables"], description:"A sub-irrigation reservoir lets roots draw water as needed, maintaining even soil moisture. Perfect for anyone who occasionally forgets to water — or for thirsty plants that dry out fast.", priceRange:"$20–$55", searchTerm:"self watering planter pot indoor plants reservoir" },
+        { name:"Fabric Grow Bag", tagline:"Air-prunes roots for superior growth", bestFor:["Monstera","Tropical Plants","Tomatoes","Large Houseplants"], description:"The breathable fabric delivers oxygen to the entire root zone and naturally air-prunes roots at the edges, preventing circling and encouraging a dense, healthy root system.", priceRange:"$8–$22", searchTerm:"fabric grow bags plants indoor outdoor" },
+        { name:"Hanging Basket", tagline:"Showcases trailing and cascading plants", bestFor:["Pothos","String of Pearls","Boston Fern","Ivy","Tradescantia"], description:"Brings trailing plants to eye level and creates beautiful vertical interest. Lined wire baskets provide excellent drainage and airflow — a classic way to display cascading foliage.", priceRange:"$10–$30", searchTerm:"hanging basket planter indoor trailing plants" },
+        { name:"Plastic Nursery Pot", tagline:"Lightweight affordable everyday pot", bestFor:["All Plants","Propagation","Seedlings"], description:"The practical workhorse of any plant collection. Lightweight, flexible, and inexpensive — perfect for propagating cuttings, housing plants temporarily, or as a liner inside a decorative pot.", priceRange:"$3–$15", searchTerm:"plastic nursery plant pots propagation repotting" },
+      ],
+      stands: [
+        { name:"Tall Floor Stand", tagline:"Elevates a statement plant to eye level", bestFor:["Fiddle Leaf Fig","Bird of Paradise","Snake Plant","Large Palms","Rubber Plant"], description:"A well-chosen plant stand transforms a single specimen into a true focal point. Solid wood and metal designs range from minimalist to bold geometric forms — pick one that echoes your interior.", priceRange:"$30–$90", searchTerm:"tall wood plant stand floor display indoor" },
+        { name:"Tiered Ladder Shelf", tagline:"Displays a whole collection on multiple levels", bestFor:["Succulents","Small Plants","Herb Collections","Trailing Plants"], description:"A tiered plant shelf creates a lush, layered display that makes the most of vertical space. The stepped design ensures each plant gets adequate light and the effect is instantly abundant.", priceRange:"$45–$110", searchTerm:"tiered plant ladder shelf stand indoor" },
+        { name:"Macramé Hanger", tagline:"Handcrafted bohemian hanging display", bestFor:["Pothos","String of Pearls","Hoya","Small Ferns","Succulents"], description:"Hand-knotted from natural cotton cord, a macramé hanger adds warmth and texture to any interior. Suspends plants at any height from ceiling hooks or curtain rods.", priceRange:"$12–$40", searchTerm:"macrame plant hanger cotton cord hanging basket" },
+        { name:"Window Sill Plant Shelf", tagline:"Maximises natural light right at the window", bestFor:["Herbs","Succulents","Cacti","Orchids","African Violets"], description:"Mounts across your windowsill or just inside the frame, putting sun-loving plants right in the brightest spot in the room. Simple and elegant use of your best light source.", priceRange:"$18–$50", searchTerm:"window plant shelf sill bracket display indoor" },
+      ],
+      soil: [
+        { name:"Premium Potting Mix", tagline:"Balanced all-purpose blend for most houseplants", bestFor:["Tropical Plants","Foliage Plants","Vegetables","Herbs","Ferns"], description:"A good all-purpose mix contains bark, coco coir, and perlite — the right balance of moisture retention, drainage, and aeration for the widest range of houseplants.", priceRange:"$10–$22", searchTerm:"premium houseplant potting mix indoor soil" },
+        { name:"Succulent & Cactus Mix", tagline:"Fast-draining gritty blend that prevents root rot", bestFor:["Succulents","Cacti","Aloe","Haworthia","Jade Plant"], description:"Formulated with sharp sand, perlite, and low organic matter — this gritty mix dries out fast between waterings, exactly what succulents and cacti need to thrive without rotting.", priceRange:"$8–$18", searchTerm:"succulent cactus potting mix soil fast draining" },
+        { name:"Orchid Bark Mix", tagline:"Chunky bark provides the air roots need", bestFor:["Orchids","Anthuriums","Hoyas","Epiphytic Bromeliads"], description:"Orchids evolved to grow on trees, not in soil. A chunky bark mix replicates their natural environment — delivering excellent drainage, airflow, and the ability to dry out fully between waterings.", priceRange:"$10–$25", searchTerm:"orchid potting bark mix chunky medium" },
+        { name:"Perlite", tagline:"Improves drainage and aeration in any mix", bestFor:["All Plants","Succulents","Root-Rot-Prone Plants"], description:"Volcanic glass expanded by heat — completely inorganic and inert. Mix into any potting medium at 20–30% to dramatically improve drainage and prevent compaction over time.", priceRange:"$8–$16", searchTerm:"horticultural perlite drainage soil amendment indoor" },
+        { name:"Worm Castings", tagline:"Nutrient-rich organic amendment with living biology", bestFor:["All Plants","Seedlings","Recovering Plants"], description:"Worm castings contain a vast community of beneficial microorganisms alongside natural plant nutrients and growth hormones. Mix into potting soil at 10–20% for a gentle, sustained boost.", priceRange:"$12–$28", searchTerm:"worm castings organic fertilizer soil amendment" },
+        { name:"Coco Coir", tagline:"Sustainable coconut-fibre growing medium", bestFor:["Seed Starting","All Plants","Hanging Baskets"], description:"A renewable byproduct of coconut processing — coco coir holds moisture well while remaining light and airy. A superb sustainable alternative to peat moss, with a near-neutral pH.", priceRange:"$8–$20", searchTerm:"coco coir compressed brick growing medium sustainable" },
+      ],
+      fert: [
+        { name:"Balanced Liquid Fertiliser", tagline:"All-purpose feed for the growing season", bestFor:["Tropical Plants","Foliage Plants","Most Houseplants"], description:"An equal-ratio NPK liquid fertiliser delivers a balanced diet to actively growing plants. Dilute in water and apply every two to four weeks through spring and summer for steady, healthy growth.", priceRange:"$10–$22", searchTerm:"balanced liquid fertilizer indoor houseplants 20-20-20" },
+        { name:"Slow-Release Pellets", tagline:"Set-and-forget feeding for up to six months", bestFor:["Container Plants","Trees & Shrubs","Low-Maintenance Plants"], description:"Coated granules release nutrients gradually with every watering, providing a steady supply without the risk of over-fertilising. Ideal for busy plant parents or plants in large containers.", priceRange:"$12–$28", searchTerm:"slow release fertilizer granules pellets indoor plants" },
+        { name:"Orchid Fertiliser", tagline:"High-potassium formula encourages flowering", bestFor:["Orchids","Bromeliads","Flowering Houseplants"], description:"Orchids need high potassium for flower production and very low nitrogen to avoid burning their delicate roots. A dedicated formula makes a real, visible difference to blooming frequency.", priceRange:"$10–$20", searchTerm:"orchid fertilizer bloom booster low nitrogen" },
+        { name:"Succulent Fertiliser", tagline:"Very dilute low-nitrogen feed for desert plants", bestFor:["Succulents","Cacti","Air Plants","Agave"], description:"Desert plants evolved in nutrient-poor soils and need only a light hand with fertiliser — typically at quarter-strength, once a month during the growing season. Low nitrogen prevents leggy, soft growth.", priceRange:"$8–$18", searchTerm:"succulent cactus liquid fertilizer low nitrogen" },
+        { name:"Seaweed Extract", tagline:"Natural growth stimulant and stress reliever", bestFor:["All Plants","Seedlings","Recovering Plants"], description:"Rich in natural plant hormones, trace minerals, and beneficial compounds — seaweed extract stimulates root development, improves stress tolerance, and gives plants a gentle overall boost.", priceRange:"$12–$24", searchTerm:"seaweed extract kelp fertilizer plant growth stimulant" },
+        { name:"Fish Emulsion", tagline:"Intensely effective organic nitrogen source", bestFor:["Foliage Plants","Vegetables","Fast-Growing Tropicals"], description:"One of the most potent organic fertilisers available — high in nitrogen and quick to break down into plant-available nutrients. It smells unpleasant when wet but is extraordinarily effective.", priceRange:"$10–$22", searchTerm:"fish emulsion organic fertilizer nitrogen houseplants" },
+      ],
+      tools: [
+        { name:"Bypass Pruning Shears", tagline:"Clean precise cuts without crushing stems", bestFor:["All Pruning","Propagation Cuttings","Deadheading"], description:"Bypass shears cut like scissors with two blades passing each other, making clean cuts that minimise damage and disease risk. Look for hardened steel blades and a comfortable grip.", priceRange:"$15–$45", searchTerm:"bypass pruning shears plant scissors garden" },
+        { name:"Long-Spout Watering Can", tagline:"Precision watering right at the root zone", bestFor:["All Indoor Plants","Orchids","Plants on Shelves"], description:"A long, slim spout lets you direct water precisely to the base of each plant without wetting the leaves — particularly useful for reaching plants at the back of shelves or inside dense foliage.", priceRange:"$18–$50", searchTerm:"indoor plant watering can long spout metal" },
+        { name:"3-in-1 Soil Meter", tagline:"Reads moisture, light and pH in real time", bestFor:["All Plants","Beginners","Overwatering Prevention"], description:"A simple probe meter eliminates the guesswork around watering. Stick it into the soil for an instant moisture reading — the single best tool for preventing the most common plant killer: overwatering.", priceRange:"$10–$28", searchTerm:"3 in 1 soil moisture meter light pH plant indoor" },
+        { name:"Fine Mist Spray Bottle", tagline:"Creates a fine cloud of moisture around leaves", bestFor:["Ferns","Calathea","Orchids","Tropical Plants","Propagation"], description:"A quality misting bottle produces an ultra-fine spray that settles on foliage without causing water damage. Ideal for raising local humidity and keeping propagation cuttings hydrated.", priceRange:"$8–$22", searchTerm:"plant misting spray bottle fine mist indoor" },
+        { name:"Repotting Mat", tagline:"Keeps the mess contained during repotting", bestFor:["All Repotting","Indoor Gardening"], description:"A waterproof foldable mat with raised edges catches soil and debris during repotting. Makes the messiest gardening tasks manageable indoors and folds away for compact storage.", priceRange:"$12–$25", searchTerm:"repotting mat waterproof plant care indoor gardening" },
+        { name:"Rooting Hormone Powder", tagline:"Speeds up root development on cuttings", bestFor:["Propagation","Stem Cuttings","Struggling Plants"], description:"A synthetic auxin hormone that triggers root development. Dip the cut end of a stem cutting before planting to dramatically improve strike rates and accelerate propagation success.", priceRange:"$8–$20", searchTerm:"rooting hormone powder plant propagation cuttings" },
+      ],
+      lights: [
+        { name:"Full-Spectrum LED Panel", tagline:"High-output light for a large growing area", bestFor:["Tropical Plants","Seedlings","Vegetables","Orchids","Succulents"], description:"A panel grow light covers a wide area and delivers the full spectrum plants use for photosynthesis. Ideal for a dedicated plant corner, grow shelf, or propagation station with limited natural light.", priceRange:"$45–$130", searchTerm:"full spectrum LED grow light panel indoor plants" },
+        { name:"Clip-On Desk Grow Light", tagline:"Compact flexible light for a single plant", bestFor:["Single Plants","Desk Plants","Low-Light Spaces"], description:"A gooseneck clip light attaches directly to a pot or shelf edge and positions right above the plant. Perfect for a single specimen in a dark corner, a home office desk, or anywhere without a mounting point.", priceRange:"$20–$55", searchTerm:"clip on desk grow light LED flexible gooseneck plant" },
+        { name:"Under-Shelf LED Strip", tagline:"Illuminates a whole plant shelf evenly", bestFor:["Plant Shelves","Herb Gardens","Propagation Stations"], description:"LED strip lights mount under shelves to create a beautifully lit display while providing real growing light to the plants below. Programmable timer models make the routine completely hands-off.", priceRange:"$25–$65", searchTerm:"LED grow light strip under shelf plants timer" },
+        { name:"Full-Spectrum Grow Bulb", tagline:"Fits any standard lamp or light fixture", bestFor:["Any Plant","Dark Corners","Low-Light Boosting"], description:"Simply screw into any standard lamp fitting and instantly upgrade it to a genuine grow light. No additional fixtures required — ideal for retrofitting existing lamps already near your plants.", priceRange:"$15–$38", searchTerm:"full spectrum grow light bulb E26 standard socket plant" },
+        { name:"Grow Light Floor Lamp", tagline:"A statement lamp with serious growing power", bestFor:["Large Plants","Dark Rooms","Statement Corners"], description:"Designed to look like a stylish floor lamp while doubling as a high-output grow light. Arc and tripod designs bring light directly over large floor plants without any ceiling fixtures needed.", priceRange:"$60–$160", searchTerm:"plant grow light floor lamp adjustable arc" },
+      ],
+      support: [
+        { name:"Coco Coir Moss Pole", tagline:"Climbing support that roots can grip and penetrate", bestFor:["Monstera","Pothos","Philodendron","Hoya","Epipremnum"], description:"Coco coir poles replicate the rough bark of a tropical tree trunk that climbing aroids naturally cling to. Roots penetrate the moist coir and anchor the plant, encouraging larger, more mature leaves.", priceRange:"$15–$40", searchTerm:"coco coir moss pole climbing plant support monstera" },
+        { name:"Bamboo Stakes", tagline:"Natural lightweight single-stem support", bestFor:["Orchids","Climbing Plants","Young Trees","Tall Stems"], description:"Slender, strong, and biodegradable — bamboo stakes are the simplest and most versatile form of plant support. Use them to guide climbing stems, support flower spikes, or help cuttings stay upright.", priceRange:"$5–$15", searchTerm:"bamboo garden stakes plant support poles" },
+        { name:"Soft Plant Ties", tagline:"Gentle ties that train without cutting stems", bestFor:["All Climbing Plants","Trailing Vines","Orchid Training"], description:"Soft silicone or foam-coated ties expand slightly as stems grow, preventing the constriction that garden wire or string causes. Reusable, weatherproof, and gentle enough for delicate orchid spikes.", priceRange:"$5–$12", searchTerm:"soft silicone plant ties training support reusable" },
+        { name:"Expandable Wire Trellis", tagline:"Structured frame for ambitious climbers", bestFor:["Jasmine","Hoya","Climbing Philodendron","Morning Glory"], description:"A fan or grid trellis provides a permanent scaffold for vigorous climbers to weave through. Expandable designs start small and stretch to accommodate a fast-growing plant over multiple seasons.", priceRange:"$12–$32", searchTerm:"expandable wire trellis indoor climbing plant support" },
+        { name:"Natural Jute Twine", tagline:"Biodegradable cord for training and tying", bestFor:["All Plants","Trellis Training","Creative Displays"], description:"Soft, flexible, and completely biodegradable — jute twine is one of the most versatile materials in any plant kit. Use it to tie stems to stakes, train growth, or create simple hanging string displays.", priceRange:"$5–$12", searchTerm:"natural jute twine garden plant ties biodegradable" },
+      ],
+      humidity: [
+        { name:"Pebble Humidity Tray", tagline:"Passive evaporation raises local humidity", bestFor:["Orchids","Ferns","Calathea","Tropical Plants"], description:"Fill a shallow tray with pebbles and water, then place the pot on top above the water line. As water evaporates it creates a pocket of humid air around the plant — elegant, chemical-free, and effective.", priceRange:"$10–$28", searchTerm:"pebble tray humidity indoor plants decorative" },
+        { name:"Ultrasonic Humidifier", tagline:"Actively raises room humidity for tropical plants", bestFor:["Ferns","Calathea","Anthuriums","Tropical Collections"], description:"An ultrasonic humidifier uses high-frequency vibrations to produce a cool, fine mist that meaningfully raises room humidity. A must for serious tropical plant collections.", priceRange:"$28–$85", searchTerm:"ultrasonic humidifier indoor plants cool mist" },
+        { name:"Glass Watering Globes", tagline:"Slow-release watering for a week or more", bestFor:["All Potted Plants","Herbs","Vacations","Thirsty Plants"], description:"Hand-blown glass globes with a slender neck are filled with water and pressed into the soil. As the surrounding soil dries, it draws water from the globe drop by drop — providing up to two weeks of consistent moisture.", priceRange:"$10–$28", searchTerm:"glass watering globes self-watering plant spikes" },
+        { name:"Terracotta Watering Spikes", tagline:"Porous clay slowly delivers water to roots", bestFor:["All Potted Plants","Vacations","Drought-Sensitive Plants"], description:"A traditional technique perfected over centuries — terracotta spikes filled with water slowly seep moisture directly to the root zone. Natural, sustainable, and beautifully effective.", priceRange:"$8–$22", searchTerm:"terracotta watering spike olla self watering plant" },
+        { name:"Soil Moisture Meter", tagline:"Takes the guesswork out of watering", bestFor:["All Plants","Beginners","Overwatering Prevention"], description:"A simple probe tells you exactly how wet or dry the soil is at root level — the most effective single tool for preventing overwatering and learning each plant's individual rhythm.", priceRange:"$8–$18", searchTerm:"soil moisture meter probe indoor plants watering" },
+      ],
+    };
+
+    /* ── Build category cards ───────────────────────────────── */
+    const catGrid = document.getElementById('category-grid');
+    CATEGORIES.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-card';
+      btn.innerHTML = `
+        <div class="cat-icon-area" style="background:${cat.bg}">${cat.icon}</div>
+        <div class="cat-body">
+          <p class="cat-name">${cat.name}</p>
+          <p class="cat-desc">${cat.desc}</p>
+        </div>`;
+      btn.addEventListener('click', () => showCategory(cat));
+      catGrid.appendChild(btn);
+    });
+
+    /* ── Show products ──────────────────────────────────────── */
+    const catView  = document.getElementById('category-view');
+    const prodView = document.getElementById('product-view');
+    const prodGrid = document.getElementById('product-grid');
+
+    function showCategory(cat) {
+      const products = PRODUCTS[cat.id];
+      catView.style.display = 'none';
+      prodView.style.display = 'block';
+      document.getElementById('product-breadcrumb').textContent = `Accessories / ${cat.name}`;
+      document.getElementById('product-cat-title').textContent = cat.name;
+      document.getElementById('product-cat-count').textContent = `${products.length} product${products.length !== 1 ? 's' : ''}`;
+
+      prodGrid.innerHTML = products.map(p => `
+        <div class="prod-card">
+          <div class="prod-color-bar" style="background:${cat.color}"></div>
+          <div class="prod-body">
+            <div class="prod-top">
+              <p class="prod-name">${p.name}</p>
+              <span class="prod-price">${p.priceRange}</span>
+            </div>
+            <p class="prod-tagline">${p.tagline}</p>
+            <div class="prod-best-for">
+              <span class="prod-best-label">Best for</span>
+              ${p.bestFor.map(pl => `<span class="prod-plant-tag">${pl}</span>`).join('')}
+            </div>
+            <p class="prod-desc">${p.description}</p>
+            <div class="prod-footer">
+              <a href="https://www.amazon.com/s?k=${encodeURIComponent(p.searchTerm)}"
+                 target="_blank" rel="noopener noreferrer" class="shop-btn">
+                Shop on Amazon
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6h7M6.5 3l3 3-3 3"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>`).join('');
+
+      prodGrid.style.animation = 'none';
+      prodGrid.offsetHeight;
+      prodGrid.style.animation = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('back-btn').addEventListener('click', () => {
+      prodView.style.display = 'none';
+      catView.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
